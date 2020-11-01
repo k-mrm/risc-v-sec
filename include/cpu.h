@@ -2,10 +2,11 @@
 #define RISC_V_SEC_CPU_H
 
 #include <stdint.h>
+#include <risc-v-sec.h>
 
 struct cpu {
-  uint32_t x[32];
-  uint32_t pc;
+  reg_t x[32];
+  reg_t pc;
 };
 
 #endif
