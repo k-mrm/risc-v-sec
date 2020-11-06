@@ -2,7 +2,7 @@
 #define RISC_V_SEC_EMU_H
 
 struct emu {
-  struct cpu cpu; 
+  struct cpu *cpu; 
 };
 
 #endif

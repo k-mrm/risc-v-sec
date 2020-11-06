@@ -11,4 +11,6 @@ struct cpu {
   struct sysbus *bus;
 };
 
+int cpu_step(struct cpu *);
+
 #endif

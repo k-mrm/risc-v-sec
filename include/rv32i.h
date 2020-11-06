@@ -1,5 +1,5 @@
-#ifndef RISC_V_SEC_OPCODE_H
-#define RISC_V_SEC_OPCODE_H
+#ifndef RISC_V_SEC_RV32I_OP_H
+#define RISC_V_SEC_RV32I_OP_H
 
 #define OP_LUI        0b0110111
 #define OP_AUIPC      0b0010111
@@ -46,5 +46,8 @@
 #   define OP_SRA     0b0100000
 # define OP_OR        0b110
 # define OP_AND       0b111
+
+void rv32i_add(struct cpu *, uint8_t, uint8_t, uint8_t);
+void rv32i_addi(struct cpu *, uint8_t, uint8_t, int32_t);
 
 #endif

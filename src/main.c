@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cpu.h>
 
 void banner() {
   puts("risc-v-sec");
