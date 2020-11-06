@@ -6,9 +6,11 @@
 #define XLEN 32
 
 #if XLEN == 32
-  typedef reg_t uint32_t;
+  typedef uint32_t reg_t;
 #elif XLEN == 64
-  typedef reg_t uint64_t;
+  typedef uint64_t reg_t;
+#else
+# error illegal xlen
 #endif
 
 #endif /* RISC_V_SEC_H */
