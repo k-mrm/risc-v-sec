@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "cpu.h"
 #include "inst.h"
 #include "opcode.h"
@@ -23,4 +24,12 @@ int cpu_step(struct cpu *cpu) {
     case OP_JALR:
     default: break;
   }
+}
+
+void cpudump(struct cpu *cpu) {
+  puts("cpu state:");
+  for(int i = 0; i < 32; i++) {
+    printf("reg%d: %lu\n", i, cpu->x[i]);
+  }
+  printf("pc: %lu", cpu->pc);
 }
