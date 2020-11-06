@@ -3,6 +3,15 @@
 
 #include <stdint.h>
 
-#define OPCODE(i) ((i) & 0x3f)
+enum optype {
+  TYPER,
+  TYPEI,
+  TYPES,
+  TYPEB,
+  TYPEU,
+  TYPEJ,
+};
+
+#define OPCODE(i) ((uint8_t)((i) & 0x3f))
 
 #endif
