@@ -1,7 +1,7 @@
 #include "rv32i.h"
 
-void rv32i_lui(struct cpu *cpu) {
-  ;
+void rv32i_lui(struct cpu *cpu, uint8_t rd, int32_t imm) {
+  regwrite(cpu, rd, imm);
 }
 
 void rv32i_auipc(struct cpu *cpu, uint8_t rd, int32_t imm) {

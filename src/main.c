@@ -1,10 +1,8 @@
 #include <stdio.h>
-#include <cpu.h>
-
-void banner() {
-  puts("risc-v-sec");
-}
+#include "risc-v-sec.h"
 
 int main(int argc, char **argv) {
-  banner();
+  struct emu *e = emu_open(argv[1]);
+  emu_run(e);
+  emu_close(e);
 }

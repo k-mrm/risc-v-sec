@@ -13,4 +13,12 @@
 # error illegal xlen
 #endif
 
+struct emu {
+  struct cpu *cpu;
+};
+
+struct emu *emu_open(char *prgfname);
+int emu_run(struct emu *e);
+void emu_close(struct emu *e);
+
 #endif /* RISC_V_SEC_H */

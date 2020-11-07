@@ -34,7 +34,7 @@
 # define OP_ORI       0b110
 # define OP_ANDI      0b111
 # define OP_SLLI      0b001
-# define SRXI      0b101
+# define SRXI         0b101
 #   define OP_SRLI    0b0000000
 #   define OP_SRAI    0b0100000
 #define ARITH         0b0110011
@@ -51,6 +51,7 @@
 # define OP_OR        0b110
 # define OP_AND       0b111
 
+void rv32i_lui(struct cpu *cpu, uint8_t rd, int32_t imm);
 void rv32i_auipc(struct cpu *cpu, uint8_t rd, int32_t imm);
 void rv32i_jal(struct cpu *cpu, uint8_t rd, int32_t off);
 void rv32i_beq(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off);
