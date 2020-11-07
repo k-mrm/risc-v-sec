@@ -1,6 +1,10 @@
 #ifndef RISC_V_SEC_RV32I_OP_H
 #define RISC_V_SEC_RV32I_OP_H
 
+#include <stdint.h>
+#include "risc-v-sec.h"
+#include "cpu.h"
+
 #define OP_LUI        0b0110111
 #define OP_AUIPC      0b0010111
 #define OP_JAL        0b1101111
@@ -30,7 +34,7 @@
 # define OP_ORI       0b110
 # define OP_ANDI      0b111
 # define OP_SLLI      0b001
-# define OP_SRXI      0b101
+# define SRXI      0b101
 #   define OP_SRLI    0b0000000
 #   define OP_SRAI    0b0100000
 #define ARITH         0b0110011
@@ -47,7 +51,14 @@
 # define OP_OR        0b110
 # define OP_AND       0b111
 
-void rv32i_add(struct cpu *, uint8_t, uint8_t, uint8_t);
-void rv32i_addi(struct cpu *, uint8_t, uint8_t, int32_t);
+void rv32i_auipc(struct cpu *cpu, uint8_t rd, int32_t imm);
+void rv32i_jal(struct cpu *cpu, uint8_t rd, int32_t off);
+void rv32i_beq(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off);
+void rv32i_bne(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off);
+void rv32i_add(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);
+void rv32i_addi(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm);
+void rv32i_xor(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);
+void rv32i_or(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);
+void rv32i_and(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
 #endif
