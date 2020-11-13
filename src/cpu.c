@@ -17,11 +17,7 @@ void free_cpu(struct cpu *cpu) {
 }
 
 static uint32_t cpu_fetch32(struct cpu *cpu) {
-  uint32_t d = (uint32_t)sysbus_read(cpu->bus, cpu->pc) << 24 |
-               (uint32_t)sysbus_read(cpu->bus, cpu->pc+1) << 16 |
-               (uint32_t)sysbus_read(cpu->bus, cpu->pc+2) << 8 |
-               (uint32_t)sysbus_read(cpu->bus, cpu->pc+3);
-  return d;
+  return sysbus_read32(cpu->bus, cpu->pc);
 }
 
 reg_t regread(struct cpu *cpu, int i) {
@@ -133,14 +129,38 @@ int cpu_step(struct cpu *cpu) {
           rv32i_bne(cpu, rs1, rs2, imm);
           break;
         case OP_BLT:
+          rv32i_blt(cpu, rs1, rs2, imm);
+          break;
         case OP_BGE:
+          rv32i_bge(cpu, rs1, rs2, imm);
+          break;
         case OP_BLTU:
+          rv32i_bltu(cpu, rs1, rs2, imm);
+          break;
         case OP_BGEU:
+          rv32i_bgeu(cpu, rs1, rs2, imm);
           break;
       }
       break;
     case LOAD:
       DECODE_I();
+      switch(funct3) {
+        case OP_LB:
+          rv32i_lb(cpu, rd, rs1, imm);
+          break;
+        case OP_LH:
+          rv32i_lh(cpu, rd, rs1, imm);
+          break;
+        case OP_LW:
+          rv32i_lw(cpu, rd, rs1, imm);
+          break;
+        case OP_LBU:
+          rv32i_lbu(cpu, rd, rs1, imm);
+          break;
+        case OP_LHU:
+          rv32i_lhu(cpu, rd, rs1, imm);
+          break;
+      }
       break;
     case STORE:
       DECODE_S();

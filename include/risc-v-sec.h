@@ -7,8 +7,10 @@
 
 #if XLEN == 32
   typedef uint32_t reg_t;
+  typedef int32_t sreg_t;
 #elif XLEN == 64
   typedef uint64_t reg_t;
+  typedef int64_t sreg_t;
 #else
 # error illegal xlen
 #endif

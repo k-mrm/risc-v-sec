@@ -9,10 +9,13 @@ struct sysbus {
 };
 
 struct sysbus *new_sysbus(void);
-uint8_t sysbus_read8(struct sysbus *, reg_t);
-void sysbus_write8(struct sysbus *, reg_t, uint8_t);
+uint8_t sysbus_read8(struct sysbus *bus, reg_t addr);
+void sysbus_write8(struct sysbus *bus, reg_t addr, uint8_t src);
 
-uint16_t sysbus_read16(struct sysbus *, reg_t);
-void sysbus_write16(struct sysbus *, reg_t, uint16_t);
+uint16_t sysbus_read16(struct sysbus *bus, reg_t addr);
+void sysbus_write16(struct sysbus *bus, reg_t addr, uint16_t src);
+
+uint32_t sysbus_read32(struct sysbus *bus, reg_t addr);
+void sysbus_write32(struct sysbus *bus, reg_t addr, uint32_t src);
 
 #endif
