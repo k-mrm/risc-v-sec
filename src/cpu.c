@@ -111,6 +111,48 @@ int cpu_step(struct cpu *cpu) {
       DECODE_U();
       rv32i_lui(cpu, rd, imm);
       break;
+    case OP_AUIPC:
+      DECODE_U();
+      rv32i_auipc(cpu, rd, imm);
+      break;
+    case OP_JAL:
+      DECODE_J();
+      rv32i_jal(cpu, rd, imm);
+      break;
+    case OP_JALR:
+      DECODE_I();
+      rv32i_jalr(cpu, rd, rs1, imm);
+      break;
+    case BRANCH:
+      DECODE_B();
+      switch(funct3) {
+        case OP_BEQ:
+          rv32i_beq(cpu, rs1, rs2, imm);
+          break;
+        case OP_BNE:
+          rv32i_bne(cpu, rs1, rs2, imm);
+          break;
+        case OP_BLT:
+        case OP_BGE:
+        case OP_BLTU:
+        case OP_BGEU:
+          break;
+      }
+      break;
+    case LOAD:
+      DECODE_I();
+      break;
+    case STORE:
+      DECODE_S();
+      switch(funct3) {
+        case OP_SB:
+          break;
+        case OP_SH:
+          break;
+        case OP_SW:
+          break;
+      }
+      break;
     case ARITH_IMM:
       DECODE_I();
       switch(funct3) {
@@ -128,6 +170,18 @@ int cpu_step(struct cpu *cpu) {
               rv32i_add(cpu, rd, rs1, rs2);
               break;
           }
+          break;
+        case OP_XOR:
+          rv32i_xor(cpu, rd, rs1, rs2);
+          break;
+        case OP_OR:
+          rv32i_or(cpu, rd, rs1, rs2);
+          break;
+        case OP_AND:
+          rv32i_and(cpu, rd, rs1, rs2);
+          break;
+        default:
+          goto err;
       }
       break;
     default:

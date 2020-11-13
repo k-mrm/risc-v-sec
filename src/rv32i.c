@@ -13,6 +13,12 @@ void rv32i_jal(struct cpu *cpu, uint8_t rd, int32_t off) {
   cpu->pc += off;
 }
 
+void rv32i_jalr(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
+  reg_t t = cpu->pc + 4;
+  cpu->pc = (regread(cpu, rs1) + off) & ~1;
+  regwrite(cpu, rd, t);
+}
+
 void rv32i_beq(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   if(regread(cpu, rs1) == regread(cpu, rs2)) {
     cpu->pc += off;
@@ -25,13 +31,13 @@ void rv32i_bne(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   }
 }
 
-void rv32i_add(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
-  reg_t a = regread(cpu, rs1) + regread(cpu, rs2);
+void rv32i_addi(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = regread(cpu, rs1) + imm;
   regwrite(cpu, rd, a);
 }
 
-void rv32i_addi(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
-  reg_t a = regread(cpu, rs1) + imm;
+void rv32i_add(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  reg_t a = regread(cpu, rs1) + regread(cpu, rs2);
   regwrite(cpu, rd, a);
 }
 
