@@ -96,6 +96,7 @@ int cpu_step(struct cpu *cpu) {
   } while(0)
   
   uint32_t inst = cpu_fetch32(cpu);
+  printf("inst: %#x", inst);
   uint8_t op = OPCODE(inst);
   uint8_t rd;
   uint8_t funct3;
@@ -280,7 +281,7 @@ int cpu_step(struct cpu *cpu) {
 err:
   /* TODO: raise IllegalInstruction exception */
   regdump(cpu);
-  panic("?");
+  panic("unknown opcode %#x", op);
   return 0;
 
 #undef DECODE_R

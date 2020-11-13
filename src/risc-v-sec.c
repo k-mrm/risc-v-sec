@@ -6,7 +6,7 @@
 
 void dump_prg(uint8_t *prg, size_t psize) {
   for(size_t i = 0; i < psize; i++) {
-    printf("%2x ", prg[i]);
+    printf("%02x ", prg[i]);
   }
   puts("");
 }
