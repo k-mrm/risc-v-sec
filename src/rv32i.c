@@ -85,18 +85,106 @@ void rv32i_lhu(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   regwrite(cpu, rd, (reg_t)m);
 }
 
+void rv32i_sb(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
+  reg_t addr = regread(cpu, rs1) + off;
+  uint8_t src = (uint8_t)regread(cpu, rs2);
+  sysbus_write8(cpu->bus, addr, src);
+}
+
+void rv32i_sh(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
+  reg_t addr = regread(cpu, rs1) + off;
+  uint16_t src = (uint16_t)regread(cpu, rs2);
+  sysbus_write16(cpu->bus, addr, src);
+}
+
+void rv32i_sw(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
+  reg_t addr = regread(cpu, rs1) + off;
+  uint32_t src = (uint32_t)regread(cpu, rs2);
+  sysbus_write32(cpu->bus, addr, src);
+}
+
 void rv32i_addi(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
   reg_t a = regread(cpu, rs1) + imm;
   regwrite(cpu, rd, a);
 }
 
+void rv32i_slti(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = (sreg_t)regread(cpu, rs1) < imm;
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_sltiu(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = regread(cpu, rs1) < (uint32_t)imm;
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_xori(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = regread(cpu, rs1) ^ imm;
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_ori(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = regread(cpu, rs1) | imm;
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_andi(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = regread(cpu, rs1) & imm;
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_slli(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = regread(cpu, rs1) << imm;
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_srli(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = regread(cpu, rs1) >> imm;
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_srai(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
+  reg_t a = (sreg_t)regread(cpu, rs1) >> imm;
+  regwrite(cpu, rd, a);
+}
+
 void rv32i_add(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
-  reg_t a = regread(cpu, rs1) + regread(cpu, rs2);
+  sreg_t a = (sreg_t)regread(cpu, rs1) + (sreg_t)regread(cpu, rs2);
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_sub(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  sreg_t a = (sreg_t)regread(cpu, rs1) - (sreg_t)regread(cpu, rs2);
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_sll(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  reg_t a = regread(cpu, rs1) << regread(cpu, rs2);
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_slt(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  reg_t a = (sreg_t)regread(cpu, rs1) < (sreg_t)regread(cpu, rs2);
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_sltu(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  reg_t a = regread(cpu, rs1) < regread(cpu, rs2);
   regwrite(cpu, rd, a);
 }
 
 void rv32i_xor(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
   reg_t a = regread(cpu, rs1) ^ regread(cpu, rs2);
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_srl(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  reg_t a = regread(cpu, rs1) >> regread(cpu, rs2);
+  regwrite(cpu, rd, a);
+}
+
+void rv32i_sra(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  reg_t a = (sreg_t)regread(cpu, rs1) >> regread(cpu, rs2);
   regwrite(cpu, rd, a);
 }
 

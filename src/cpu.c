@@ -34,7 +34,7 @@ static void regdump(struct cpu *cpu) {
   for(int i = 0; i < 32; i++) {
     printf("reg%d: %u\n", i, cpu->x[i]);
   }
-  printf("pc: %u", cpu->pc);
+  printf("pc: %u\n", cpu->pc);
 }
 
 int cpu_step(struct cpu *cpu) {
@@ -54,6 +54,8 @@ int cpu_step(struct cpu *cpu) {
     rd = RD(inst);  \
     rs1 = RS1(inst);  \
     imm = (int32_t)inst >> 20; \
+    shamt = RS2(inst);  \
+    funct7 = FUNCT7(inst);  \
   } while(0)
 
 #define DECODE_S()  \
@@ -99,6 +101,7 @@ int cpu_step(struct cpu *cpu) {
   uint8_t funct3;
   uint8_t rs1;
   uint8_t rs2;
+  uint8_t shamt;
   uint8_t funct7;
   int32_t imm;
 
@@ -140,6 +143,8 @@ int cpu_step(struct cpu *cpu) {
         case OP_BGEU:
           rv32i_bgeu(cpu, rs1, rs2, imm);
           break;
+        default:
+          goto err;
       }
       break;
     case LOAD:
@@ -160,17 +165,24 @@ int cpu_step(struct cpu *cpu) {
         case OP_LHU:
           rv32i_lhu(cpu, rd, rs1, imm);
           break;
+        default:
+          goto err;
       }
       break;
     case STORE:
       DECODE_S();
       switch(funct3) {
         case OP_SB:
+          rv32i_sb(cpu, rs1, rs2, imm);
           break;
         case OP_SH:
+          rv32i_sh(cpu, rs1, rs2, imm);
           break;
         case OP_SW:
+          rv32i_sw(cpu, rs1, rs2, imm);
           break;
+        default:
+          goto err;
       }
       break;
     case ARITH_IMM:
@@ -178,6 +190,36 @@ int cpu_step(struct cpu *cpu) {
       switch(funct3) {
         case OP_ADDI:
           rv32i_addi(cpu, rd, rs1, imm);
+          break;
+        case OP_SLTI:
+          rv32i_slti(cpu, rd, rs1, imm);
+          break;
+        case OP_SLTIU:
+          rv32i_sltiu(cpu, rd, rs1, imm);
+          break;
+        case OP_XORI:
+          rv32i_xori(cpu, rd, rs1, imm);
+          break;
+        case OP_ORI:
+          rv32i_ori(cpu, rd, rs1, imm);
+          break;
+        case OP_ANDI:
+          rv32i_andi(cpu, rd, rs1, imm);
+          break;
+        case OP_SLLI:
+          rv32i_slli(cpu, rd, rs1, shamt);
+          break;
+        case SRXI:
+          switch(funct7) {
+            case OP_SRLI:
+              rv32i_srli(cpu, rd, rs1, shamt);
+              break;
+            case OP_SRAI:
+              rv32i_srai(cpu, rd, rs1, shamt);
+              break;
+            default:
+              goto err;
+          }
           break;
       }
       break;
@@ -189,10 +231,34 @@ int cpu_step(struct cpu *cpu) {
             case OP_ADD:
               rv32i_add(cpu, rd, rs1, rs2);
               break;
+            case OP_SUB:
+              rv32i_sub(cpu, rd, rs1, rs2);
+              break;
+            default:
+              goto err;
           }
+          break;
+        case OP_SLL:
+          rv32i_sll(cpu, rd, rs1, rs2);
+          break;
+        case OP_SLT:
+          rv32i_slt(cpu, rd, rs1, rs2);
+          break;
+        case OP_SLTU:
+          rv32i_sltu(cpu, rd, rs1, rs2);
           break;
         case OP_XOR:
           rv32i_xor(cpu, rd, rs1, rs2);
+          break;
+        case SRX:
+          switch(funct7) {
+            case OP_SRL:
+              rv32i_srl(cpu, rd, rs1, rs2);
+              break;
+            case OP_SRA:
+              rv32i_sra(cpu, rd, rs1, rs2);
+              break;
+          }
           break;
         case OP_OR:
           rv32i_or(cpu, rd, rs1, rs2);
@@ -209,9 +275,11 @@ int cpu_step(struct cpu *cpu) {
   }
 
   cpu->pc += 4;
+  return 0;
 
 err:
   /* TODO: raise IllegalInstruction exception */
+  regdump(cpu);
   panic("?");
   return 0;
 
