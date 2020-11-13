@@ -1,7 +1,20 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "cpu.h"
 #include "inst.h"
 #include "rv32i.h"
+#include "log.h"
+
+struct cpu *new_cpu() {
+  struct cpu *cpu = malloc(sizeof(struct cpu));
+  cpu->bus = new_sysbus();
+  cpu->pc = 0;
+  return cpu;
+}
+
+void free_cpu(struct cpu *cpu) {
+  free(cpu);
+}
 
 static uint32_t cpu_fetch32(struct cpu *cpu) {
   uint32_t d = (uint32_t)sysbus_read(cpu->bus, cpu->pc) << 24 |
@@ -125,6 +138,7 @@ int cpu_step(struct cpu *cpu) {
 
 err:
   /* TODO: raise IllegalInstruction exception */
+  panic("?");
   return 0;
 
 #undef DECODE_R

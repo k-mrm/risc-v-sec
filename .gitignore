@@ -52,3 +52,4 @@ Mkfile.old
 dkms.conf
 
 risc-v-sec
+*.bin

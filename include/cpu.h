@@ -11,6 +11,7 @@ struct cpu {
   struct sysbus *bus;
 };
 
+struct cpu *new_cpu();
 int cpu_step(struct cpu *);
 reg_t regread(struct cpu *cpu, int i);
 void regwrite(struct cpu *cpu, int i, reg_t data);

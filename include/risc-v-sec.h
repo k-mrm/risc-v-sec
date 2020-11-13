@@ -13,6 +13,7 @@
 # error illegal xlen
 #endif
 
+struct cpu;
 struct emu {
   struct cpu *cpu;
 };
