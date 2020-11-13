@@ -7,10 +7,21 @@ struct sysbus *new_sysbus() {
   return s;
 }
 
-uint8_t sysbus_read(struct sysbus *bus, reg_t addr) {
+uint8_t sysbus_read8(struct sysbus *bus, reg_t addr) {
   return memread(bus->mem, addr);
 }
 
-void sysbus_write(struct sysbus *bus, reg_t addr, uint8_t src) {
-  return memwrite(bus->mem, addr, src);
+void sysbus_write8(struct sysbus *bus, reg_t addr, uint8_t src) {
+  memwrite(bus->mem, addr, src);
+}
+
+uint16_t sysbus_read16(struct sysbus *bus, reg_t addr) {
+  return (uint16_t)memread(bus->mem, addr) << 8 | memread(bus->mem, addr + 1);
+}
+
+void sysbus_write16(struct sysbus *bus, reg_t addr, uint16_t src) {
+  uint8_t h = (src >> 8) & 0xff;
+  uint8_t l = src & 0xff;
+  memwrite(bus->mem, addr, h);
+  memwrite(bus->mem, addr + 1, l);
 }
