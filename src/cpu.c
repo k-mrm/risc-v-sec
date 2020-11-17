@@ -53,7 +53,7 @@ int cpu_step(struct cpu *cpu) {
     funct3 = FUNCT3(inst);  \
     rd = RD(inst);  \
     rs1 = RS1(inst);  \
-    imm = (int32_t)inst >> 20; \
+    imm = (int32_t)inst >> 20 & 0xfff; \
     shamt = RS2(inst);  \
     funct7 = FUNCT7(inst);  \
   } while(0)
@@ -96,6 +96,7 @@ int cpu_step(struct cpu *cpu) {
   } while(0)
   
   uint32_t inst = cpu_fetch32(cpu);
+  log_dbg("inst %#x", inst);
   uint8_t op = OPCODE(inst);
   uint8_t rd;
   uint8_t funct3;
@@ -280,6 +281,7 @@ int cpu_step(struct cpu *cpu) {
       break;
     case SYSTEM:
       DECODE_I();
+      log_dbg("imm:%x", imm);
       switch(funct3) {
         case PRIV:
           switch(imm) {

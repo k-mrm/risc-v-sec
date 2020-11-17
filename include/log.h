@@ -4,5 +4,6 @@
 #include <stdarg.h>
 
 void panic(char *s, ...);
+void log_dbg(char *s, ...);
 
 #endif

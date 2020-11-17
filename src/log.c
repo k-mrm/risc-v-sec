@@ -12,3 +12,12 @@ void panic(char *s, ...) {
 
   exit(1);
 }
+
+void log_dbg(char *s, ...) {
+  va_list args;
+  va_start(args, s);
+  fprintf(stderr, "[debug] ");
+  vfprintf(stderr, s, args);
+  fprintf(stderr, "\n");
+  va_end(args);
+}
