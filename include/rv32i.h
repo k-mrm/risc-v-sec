@@ -108,4 +108,11 @@ void rv32i_or(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);
 void rv32i_xor(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);
 void rv32i_and(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
+void rv32i_csrrw(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint32_t csr);
+void rv32i_csrrs(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint32_t csr);
+void rv32i_csrrc(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint32_t csr);
+void rv32i_csrrwi(struct cpu *cpu, uint8_t rd, uint8_t zimm, uint32_t csr);
+void rv32i_csrrsi(struct cpu *cpu, uint8_t rd, uint8_t zimm, uint32_t csr);
+void rv32i_csrrci(struct cpu *cpu, uint8_t rd, uint8_t zimm, uint32_t csr);
+
 #endif

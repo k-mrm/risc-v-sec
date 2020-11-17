@@ -21,6 +21,7 @@ struct cpu {
 };
 
 struct cpu *new_cpu(void);
+void free_cpu(struct cpu *cpu);
 int cpu_step(struct cpu *cpu);
 reg_t regread(struct cpu *cpu, int i);
 void regwrite(struct cpu *cpu, int i, reg_t data);
