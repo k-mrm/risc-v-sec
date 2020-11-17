@@ -4,15 +4,24 @@
 #include <stdint.h>
 #include "risc-v-sec.h"
 #include "system-bus.h"
+#include "csr.h"
+
+enum mode {
+  USER,
+  SUPERVISOR,
+  HYPERVISOR,
+  MACHINE,
+};
 
 struct cpu {
   reg_t x[32];
   reg_t pc;
+  reg_t csr[4096];
   struct sysbus *bus;
 };
 
-struct cpu *new_cpu();
-int cpu_step(struct cpu *);
+struct cpu *new_cpu(void);
+int cpu_step(struct cpu *cpu);
 reg_t regread(struct cpu *cpu, int i);
 void regwrite(struct cpu *cpu, int i, reg_t data);
 

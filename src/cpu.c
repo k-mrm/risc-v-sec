@@ -96,7 +96,6 @@ int cpu_step(struct cpu *cpu) {
   } while(0)
   
   uint32_t inst = cpu_fetch32(cpu);
-  printf("inst: %#x", inst);
   uint8_t op = OPCODE(inst);
   uint8_t rd;
   uint8_t funct3;
@@ -269,6 +268,33 @@ int cpu_step(struct cpu *cpu) {
           break;
         default:
           goto err;
+      }
+      break;
+    case MISC_MEM:
+      DECODE_I();
+      /* TODO */
+      switch(funct3) {
+        case OP_FENCE: break;
+        case OP_FENCEI: break;
+      }
+      break;
+    case SYSTEM:
+      DECODE_I();
+      switch(funct3) {
+        case PRIV:
+          switch(imm) {
+            case OP_ECALL:
+            case OP_EBREAK:
+              break;    /* TODO */
+          }
+          break;
+        case OP_CSRRW:
+        case OP_CSRRS:
+        case OP_CSRRC:
+        case OP_CSRRWI:
+        case OP_CSRRSI:
+        case OP_CSRRCI:
+          break;    /* TODO */
       }
       break;
     default:

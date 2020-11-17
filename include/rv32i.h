@@ -50,6 +50,19 @@
 #   define OP_SRA     0b0100000
 # define OP_OR        0b110
 # define OP_AND       0b111
+#define MISC_MEM      0b0001111
+# define OP_FENCE     0b000
+# define OP_FENCEI    0b001
+#define SYSTEM        0b1110011
+# define PRIV         0b000
+#   define OP_ECALL   0
+#   define OP_EBREAK  1
+# define OP_CSRRW     0b001
+# define OP_CSRRS     0b010
+# define OP_CSRRC     0b011
+# define OP_CSRRWI    0b101
+# define OP_CSRRSI    0b110
+# define OP_CSRRCI    0b111
 
 void rv32i_lui(struct cpu *cpu, uint8_t rd, int32_t imm);
 void rv32i_auipc(struct cpu *cpu, uint8_t rd, int32_t imm);
