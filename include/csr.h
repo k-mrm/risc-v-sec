@@ -239,7 +239,7 @@ enum csr {
   DSCRATCH1       = 0x7b3,
 };
 
-reg_t csr_read(reg_t *csrs, enum csr c);
-void csr_write(reg_t *csrs, enum csr c, reg_t val);
+reg_t csrread(reg_t *csrs, enum csr c);
+void csrwrite(reg_t *csrs, enum csr c, reg_t val);
 
 #endif

@@ -200,6 +200,37 @@ void rv32i_and(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
 }
 
 
-void rv32i_csrrw(struct cpu *cpu) {
-  ;
+void rv32i_csrrw(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint32_t csr) {
+  reg_t t = csrread(cpu->csrs, csr);
+  csrwrite(cpu->csrs, csr, regread(cpu, rs1));
+  regwrite(cpu, rd, t);
+}
+
+void rv32i_csrrs(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint32_t csr) {
+  reg_t t = csrread(cpu->csrs, csr);
+  csrwrite(cpu->csrs, csr, t | regread(cpu, rs1));
+  regwrite(cpu, rd, t);
+}
+
+void rv32i_csrrc(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint32_t csr) {
+  reg_t t = csrread(cpu->csrs, csr);
+  csrwrite(cpu->csrs, csr, t & ~regread(cpu, rs1));
+  regwrite(cpu, rd, t);
+}
+
+void rv32i_csrrwi(struct cpu *cpu, uint8_t rd, uint8_t zimm, uint32_t csr) {
+  regwrite(cpu, rd, csrread(cpu->csrs, csr));
+  csrwrite(cpu->csrs, csr, zimm);
+}
+
+void rv32i_csrrsi(struct cpu *cpu, uint8_t rd, uint8_t zimm, uint32_t csr) {
+  reg_t t = csrread(cpu->csrs, csr);
+  csrwrite(cpu->csrs, csr, t | zimm);
+  regwrite(cpu, rd, t);
+}
+
+void rv32i_csrrci(struct cpu *cpu, uint8_t rd, uint8_t zimm, uint32_t csr) {
+  reg_t t = csrread(cpu->csrs, csr);
+  csrwrite(cpu->csrs, csr, t & ~zimm);
+  regwrite(cpu, rd, t);
 }

@@ -16,7 +16,7 @@ enum mode {
 struct cpu {
   reg_t x[32];
   reg_t pc;
-  reg_t csr[4096];
+  reg_t csrs[4096];
   struct sysbus *bus;
 };
 

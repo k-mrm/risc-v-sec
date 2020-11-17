@@ -289,12 +289,23 @@ int cpu_step(struct cpu *cpu) {
           }
           break;
         case OP_CSRRW:
+          rv32i_csrrw(cpu, rd, rs1, (uint32_t)imm);
+          break;
         case OP_CSRRS:
+          rv32i_csrrs(cpu, rd, rs1, (uint32_t)imm);
+          break;
         case OP_CSRRC:
+          rv32i_csrrc(cpu, rd, rs1, (uint32_t)imm);
+          break;
         case OP_CSRRWI:
+          rv32i_csrrwi(cpu, rd, rs1, (uint32_t)imm);
+          break;
         case OP_CSRRSI:
+          rv32i_csrrsi(cpu, rd, rs1, (uint32_t)imm);
+          break;
         case OP_CSRRCI:
-          break;    /* TODO */
+          rv32i_csrrci(cpu, rd, rs1, (uint32_t)imm);
+          break;
       }
       break;
     default:
