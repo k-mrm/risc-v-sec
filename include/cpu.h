@@ -6,7 +6,7 @@
 #include "system-bus.h"
 #include "csr.h"
 
-enum mode {
+enum priv {
   USER = 0,
   SUPERVISOR = 1,
   HYPERVISOR = 2,
@@ -16,9 +16,10 @@ enum mode {
 struct cpu {
   reg_t x[32];
   reg_t pc;
+  reg_t nextpc;
   reg_t csrs[4096];
   struct sysbus *bus;
-  enum mode mode;
+  enum priv priv;
 };
 
 struct cpu *new_cpu(void);

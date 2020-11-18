@@ -1,11 +1,13 @@
 #include "exception.h"
 #include "csr.h"
+#include "log.h"
 
 void raise(struct cpu *cpu, enum exception e, reg_t mtval) {
   reg_t mstatus = csrread(cpu->csrs, MSTATUS);
   reg_t mie = (mstatus & MSTATUS_MIE) != 0;
   csrwrite(cpu->csrs, MEPC, cpu->pc);
   cpu->pc = csrread(cpu->csrs, MTVEC);
+  log_dbg("raise: pc %#x", cpu->pc);
   csrwrite(cpu->csrs, MCAUSE, e);
   csrwrite(cpu->csrs, MTVAL, mtval);
   if(mie)

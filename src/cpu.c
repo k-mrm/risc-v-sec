@@ -18,6 +18,7 @@ void free_cpu(struct cpu *cpu) {
 }
 
 static uint32_t cpu_fetch32(struct cpu *cpu) {
+  cpu->nextpc = cpu->pc + 4;
   return sysbus_read32(cpu->bus, cpu->pc);
 }
 
@@ -42,7 +43,7 @@ static void regdump(struct cpu *cpu) {
   for(int i = 0; i < 32; i++) {
     printf("reg%d(%s): %u\n", i, regname[i], cpu->x[i]);
   }
-  printf("pc: %u\n", cpu->pc);
+  printf("pc: %#x\n", cpu->pc);
 }
 
 int cpu_step(struct cpu *cpu) {
@@ -54,6 +55,7 @@ int cpu_step(struct cpu *cpu) {
     rs1 = RS1(inst);  \
     rs2 = RS2(inst);  \
     funct7 = FUNCT7(inst);  \
+    log_dbg("R: rd %d f3 %d rs1 %d rs2 %d f7 %d", rd, funct3, rs1, rs2, funct7);  \
   } while(0)
 
 #define DECODE_I()  \
@@ -64,6 +66,7 @@ int cpu_step(struct cpu *cpu) {
     imm = (int32_t)inst >> 20 & 0xfff; \
     shamt = RS2(inst);  \
     funct7 = FUNCT7(inst);  \
+    log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
   } while(0)
 
 #define DECODE_S()  \
@@ -73,6 +76,7 @@ int cpu_step(struct cpu *cpu) {
     rs2 = RS2(inst);  \
     int32_t sinst = (int32_t)inst;  \
     imm = (((sinst >> 25) & 0x7f) << 5) | ((sinst >> 7) & 0x1f);  \
+    log_dbg("S: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);  \
   } while(0)
 
 #define DECODE_B()  \
@@ -85,12 +89,14 @@ int cpu_step(struct cpu *cpu) {
           (((sinst >> 7) & 1) << 11) |    \
           (((sinst >> 25) & 0x3f) << 5) | \
           (((sinst >> 8) & 0xf) << 1);    \
+    log_dbg("B: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);  \
   } while(0)
 
 #define DECODE_U()  \
   do {  \
     rd = RD(inst);  \
     imm = (int32_t)inst & 0xfffff000; \
+    log_dbg("U: rd %d imm %d", rd, imm);  \
   } while(0)
 
 #define DECODE_J()  \
@@ -101,6 +107,7 @@ int cpu_step(struct cpu *cpu) {
           (((sinst >> 12) & 0xff) << 12) |  \
           (((sinst >> 20) & 1) << 11) |     \
           (((sinst >> 21) & 0x3ff) << 1);   \
+    log_dbg("J: rd %d imm %d", rd, imm);  \
   } while(0)
   
   uint32_t inst = cpu_fetch32(cpu);
@@ -325,7 +332,7 @@ int cpu_step(struct cpu *cpu) {
       goto err;
   }
 
-  cpu->pc += 4;
+  cpu->pc = cpu->nextpc;
   return 0;
 
 err:

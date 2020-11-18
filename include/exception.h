@@ -50,6 +50,6 @@ enum interrupt {
   MACHINE_EXTERNAL_INT  = 11,
 };
 
-void raise(struct cpu *cpu, enum exception e, reg_t);
+void raise(struct cpu *cpu, enum exception e, reg_t mtval);
 
 #endif

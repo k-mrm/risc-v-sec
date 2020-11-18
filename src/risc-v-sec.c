@@ -27,7 +27,7 @@ static uint8_t *read_prg(char *prgfname, size_t *prgsize) {
 
   *prgsize = fsize;
 
-  dump_prg(prg, fsize);
+  // dump_prg(prg, fsize);
 
   return prg;
 }

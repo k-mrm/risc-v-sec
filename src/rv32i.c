@@ -10,48 +10,48 @@ void rv32i_auipc(struct cpu *cpu, uint8_t rd, int32_t imm) {
 
 void rv32i_jal(struct cpu *cpu, uint8_t rd, int32_t off) {
   regwrite(cpu, rd, cpu->pc + 4);
-  cpu->pc += off;
+  cpu->nextpc = cpu->pc + off;
 }
 
 void rv32i_jalr(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t t = cpu->pc + 4;
-  cpu->pc = (regread(cpu, rs1) + off) & ~1;
+  cpu->nextpc = (regread(cpu, rs1) + off) & ~1;
   regwrite(cpu, rd, t);
 }
 
 void rv32i_beq(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   if(regread(cpu, rs1) == regread(cpu, rs2)) {
-    cpu->pc += off;
+    cpu->nextpc = cpu->pc + off;
   }
 }
 
 void rv32i_bne(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   if(regread(cpu, rs1) != regread(cpu, rs2)) {
-    cpu->pc += off;
+    cpu->nextpc = cpu->pc + off;
   }
 }
 
 void rv32i_blt(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   if((sreg_t)regread(cpu, rs1) < (sreg_t)regread(cpu, rs2)) {
-    cpu->pc += off;
+    cpu->nextpc = cpu->pc + off;
   }
 }
 
 void rv32i_bge(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   if((sreg_t)regread(cpu, rs1) >= (sreg_t)regread(cpu, rs2)) {
-    cpu->pc += off;
+    cpu->nextpc = cpu->pc + off;
   }
 }
 
 void rv32i_bltu(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   if(regread(cpu, rs1) < regread(cpu, rs2)) {
-    cpu->pc += off;
+    cpu->nextpc = cpu->pc + off;
   }
 }
 
 void rv32i_bgeu(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   if(regread(cpu, rs1) >= regread(cpu, rs2)) {
-    cpu->pc += off;
+    cpu->nextpc = cpu->pc + off;
   }
 }
 
