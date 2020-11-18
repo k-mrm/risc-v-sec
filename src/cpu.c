@@ -4,6 +4,7 @@
 #include "inst.h"
 #include "rv32i.h"
 #include "log.h"
+#include "exception.h"
 
 struct cpu *new_cpu() {
   struct cpu *cpu = malloc(sizeof(struct cpu));
@@ -30,9 +31,16 @@ void regwrite(struct cpu *cpu, int i, reg_t data) {
     cpu->x[i] = data;
 }
 
+static char *regname[32] = {
+  "zero", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+  "fp", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
+  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6",
+};
+
 static void regdump(struct cpu *cpu) {
   for(int i = 0; i < 32; i++) {
-    printf("reg%d: %u\n", i, cpu->x[i]);
+    printf("reg%d(%s): %u\n", i, regname[i], cpu->x[i]);
   }
   printf("pc: %u\n", cpu->pc);
 }
@@ -286,8 +294,11 @@ int cpu_step(struct cpu *cpu) {
         case PRIV:
           switch(imm) {
             case OP_ECALL:
+              raise(cpu, ENV_CALL_FROM_M, 0);
+              break;
             case OP_EBREAK:
-              break;    /* TODO */
+              raise(cpu, BREAKPOINT, 0);
+              break;
           }
           break;
         case OP_CSRRW:

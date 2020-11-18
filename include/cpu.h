@@ -7,10 +7,10 @@
 #include "csr.h"
 
 enum mode {
-  USER,
-  SUPERVISOR,
-  HYPERVISOR,
-  MACHINE,
+  USER = 0,
+  SUPERVISOR = 1,
+  HYPERVISOR = 2,
+  MACHINE = 3,
 };
 
 struct cpu {
@@ -18,6 +18,7 @@ struct cpu {
   reg_t pc;
   reg_t csrs[4096];
   struct sysbus *bus;
+  enum mode mode;
 };
 
 struct cpu *new_cpu(void);

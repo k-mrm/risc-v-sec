@@ -53,3 +53,4 @@ dkms.conf
 
 risc-v-sec
 *.bin
+test/
