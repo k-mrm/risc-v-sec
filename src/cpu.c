@@ -48,32 +48,8 @@ static void regdump(struct cpu *cpu) {
 
 int cpu_step(struct cpu *cpu) {
 
-#define DECODE_R()  \
-  do {  \
-    rd = RD(inst);  \
-    funct3 = FUNCT3(inst);  \
-    rs1 = RS1(inst);  \
-    rs2 = RS2(inst);  \
-    funct7 = FUNCT7(inst);  \
-    log_dbg("R: rd %d f3 %d rs1 %d rs2 %d f7 %d", rd, funct3, rs1, rs2, funct7);  \
-  } while(0)
-
-#define DECODE_I()  \
-  do {  \
-    funct3 = FUNCT3(inst);  \
-    rd = RD(inst);  \
-    rs1 = RS1(inst);  \
-    imm = (int32_t)inst >> 20 & 0xfff; \
-    shamt = RS2(inst);  \
-    funct7 = FUNCT7(inst);  \
-    log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
-  } while(0)
-
 #define DECODE_S()  \
   do {  \
-    funct3 = FUNCT3(inst);  \
-    rs1 = RS1(inst);  \
-    rs2 = RS2(inst);  \
     int32_t sinst = (int32_t)inst;  \
     imm = (((sinst >> 25) & 0x7f) << 5) | ((sinst >> 7) & 0x1f);  \
     log_dbg("S: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);  \
@@ -81,9 +57,6 @@ int cpu_step(struct cpu *cpu) {
 
 #define DECODE_B()  \
   do {  \
-    funct3 = FUNCT3(inst);  \
-    rs1 = RS1(inst);  \
-    rs2 = RS2(inst);  \
     int32_t sinst = (int32_t)inst;  \
     imm = (((sinst >> 31) & 1)) << 12 |   \
           (((sinst >> 7) & 1) << 11) |    \
@@ -94,14 +67,12 @@ int cpu_step(struct cpu *cpu) {
 
 #define DECODE_U()  \
   do {  \
-    rd = RD(inst);  \
     imm = (int32_t)inst & 0xfffff000; \
     log_dbg("U: rd %d imm %d", rd, imm);  \
   } while(0)
 
 #define DECODE_J()  \
   do {  \
-    rd = RD(inst);  \
     int32_t sinst = (int32_t)inst;  \
     imm = (((sinst >> 31) & 1) << 20) |     \
           (((sinst >> 12) & 0xff) << 12) |  \
@@ -111,19 +82,20 @@ int cpu_step(struct cpu *cpu) {
   } while(0)
   
   uint32_t inst = cpu_fetch32(cpu);
-  log_dbg("inst %#x", inst);
+  log_dbg("inst %#x, pc: %#x", inst, cpu->pc);
   uint8_t op = OPCODE(inst);
-  uint8_t rd;
-  uint8_t funct3;
-  uint8_t rs1;
-  uint8_t rs2;
-  uint8_t shamt;
-  uint8_t funct7;
+  uint8_t rd = RD(inst);
+  uint8_t funct3 = FUNCT3(inst);
+  uint8_t rs1 = RS1(inst);
+  uint8_t rs2 = RS2(inst);
+  uint8_t shamt = RS2(inst);
+  uint8_t funct7 = FUNCT7(inst);
   int32_t imm;
 
   switch(op) {
     case OP_LUI:
-      DECODE_U();
+      imm = (int32_t)inst & 0xfffff000;
+      log_dbg("U: rd %d imm %d", rd, imm);
       rv32i_lui(cpu, rd, imm);
       break;
     case OP_AUIPC:
@@ -135,7 +107,8 @@ int cpu_step(struct cpu *cpu) {
       rv32i_jal(cpu, rd, imm);
       break;
     case OP_JALR:
-      DECODE_I();
+      imm = (int32_t)inst >> 20;
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
       rv32i_jalr(cpu, rd, rs1, imm);
       break;
     case BRANCH:
@@ -164,7 +137,8 @@ int cpu_step(struct cpu *cpu) {
       }
       break;
     case LOAD:
-      DECODE_I();
+      imm = (int32_t)inst >> 20;
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
       switch(funct3) {
         case OP_LB:
           rv32i_lb(cpu, rd, rs1, imm);
@@ -202,7 +176,8 @@ int cpu_step(struct cpu *cpu) {
       }
       break;
     case ARITH_IMM:
-      DECODE_I();
+      imm = (int32_t)inst >> 20;
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
       switch(funct3) {
         case OP_ADDI:
           rv32i_addi(cpu, rd, rs1, imm);
@@ -240,7 +215,6 @@ int cpu_step(struct cpu *cpu) {
       }
       break;
     case ARITH:
-      DECODE_R();
       switch(funct3) {
         case ADDSUB:
           switch(funct7) {
@@ -287,7 +261,8 @@ int cpu_step(struct cpu *cpu) {
       }
       break;
     case MISC_MEM:
-      DECODE_I();
+      imm = inst >> 20;
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
       /* TODO */
       switch(funct3) {
         case OP_FENCE: break;
@@ -295,7 +270,8 @@ int cpu_step(struct cpu *cpu) {
       }
       break;
     case SYSTEM:
-      DECODE_I();
+      imm = inst >> 20;
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
       log_dbg("imm:%x", imm);
       switch(funct3) {
         case PRIV:
@@ -306,6 +282,12 @@ int cpu_step(struct cpu *cpu) {
             case OP_EBREAK:
               raise(cpu, BREAKPOINT, 0);
               break;
+            case OP_SRET:
+              break;
+            case OP_MRET:
+              break;
+            default:
+              goto err;
           }
           break;
         case OP_CSRRW:
@@ -326,6 +308,8 @@ int cpu_step(struct cpu *cpu) {
         case OP_CSRRCI:
           rv32i_csrrci(cpu, rd, rs1, (uint32_t)imm);
           break;
+        default:
+          goto err;
       }
       break;
     default:
@@ -340,12 +324,5 @@ err:
   regdump(cpu);
   panic("unknown opcode %#x", op);
   return 0;
-
-#undef DECODE_R
-#undef DECODE_I
-#undef DECODE_S
-#undef DECODE_B
-#undef DECODE_U
-#undef DECODE_J
 }
 
