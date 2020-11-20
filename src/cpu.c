@@ -48,13 +48,6 @@ static void regdump(struct cpu *cpu) {
 
 int cpu_step(struct cpu *cpu) {
 
-#define DECODE_S()  \
-  do {  \
-    int32_t sinst = (int32_t)inst;  \
-    imm = (((sinst >> 25) & 0x7f) << 5) | ((sinst >> 7) & 0x1f);  \
-    log_dbg("S: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);  \
-  } while(0)
-
 #define DECODE_B()  \
   do {  \
     int32_t sinst = (int32_t)inst;  \
@@ -63,12 +56,6 @@ int cpu_step(struct cpu *cpu) {
           (((sinst >> 25) & 0x3f) << 5) | \
           (((sinst >> 8) & 0xf) << 1);    \
     log_dbg("B: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);  \
-  } while(0)
-
-#define DECODE_U()  \
-  do {  \
-    imm = (int32_t)inst & 0xfffff000; \
-    log_dbg("U: rd %d imm %d", rd, imm);  \
   } while(0)
 
 #define DECODE_J()  \
@@ -90,7 +77,7 @@ int cpu_step(struct cpu *cpu) {
   uint8_t rs2 = RS2(inst);
   uint8_t shamt = RS2(inst);
   uint8_t funct7 = FUNCT7(inst);
-  int32_t imm;
+  int32_t imm, sinst;
 
   switch(op) {
     case OP_LUI:
@@ -99,7 +86,8 @@ int cpu_step(struct cpu *cpu) {
       rv32i_lui(cpu, rd, imm);
       break;
     case OP_AUIPC:
-      DECODE_U();
+      imm = (int32_t)inst & 0xfffff000;
+      log_dbg("U: rd %d imm %d", rd, imm);
       rv32i_auipc(cpu, rd, imm);
       break;
     case OP_JAL:
@@ -112,7 +100,11 @@ int cpu_step(struct cpu *cpu) {
       rv32i_jalr(cpu, rd, rs1, imm);
       break;
     case BRANCH:
-      DECODE_B();
+      imm = (((int32_t)inst >> 31) << 12) |
+            ((((int32_t)inst >> 7) & 1) << 11) |
+            ((((int32_t)inst >> 25) & 0x3f) << 5) |
+            ((((int32_t)inst >> 8) & 0xf) << 1);
+      log_dbg("B: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);
       switch(funct3) {
         case OP_BEQ:
           rv32i_beq(cpu, rs1, rs2, imm);
@@ -160,7 +152,9 @@ int cpu_step(struct cpu *cpu) {
       }
       break;
     case STORE:
-      DECODE_S();
+      sinst = (int32_t)inst;
+      imm = (((sinst >> 25) & 0x7f) << 5) | ((sinst >> 7) & 0x1f);
+      log_dbg("S: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);
       switch(funct3) {
         case OP_SB:
           rv32i_sb(cpu, rs1, rs2, imm);
@@ -248,6 +242,8 @@ int cpu_step(struct cpu *cpu) {
             case OP_SRA:
               rv32i_sra(cpu, rd, rs1, rs2);
               break;
+            default:
+              goto err;
           }
           break;
         case OP_OR:
