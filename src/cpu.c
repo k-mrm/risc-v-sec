@@ -47,27 +47,6 @@ static void regdump(struct cpu *cpu) {
 }
 
 int cpu_step(struct cpu *cpu) {
-
-#define DECODE_B()  \
-  do {  \
-    int32_t sinst = (int32_t)inst;  \
-    imm = (((sinst >> 31) & 1)) << 12 |   \
-          (((sinst >> 7) & 1) << 11) |    \
-          (((sinst >> 25) & 0x3f) << 5) | \
-          (((sinst >> 8) & 0xf) << 1);    \
-    log_dbg("B: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);  \
-  } while(0)
-
-#define DECODE_J()  \
-  do {  \
-    int32_t sinst = (int32_t)inst;  \
-    imm = (((sinst >> 31) & 1) << 20) |     \
-          (((sinst >> 12) & 0xff) << 12) |  \
-          (((sinst >> 20) & 1) << 11) |     \
-          (((sinst >> 21) & 0x3ff) << 1);   \
-    log_dbg("J: rd %d imm %d", rd, imm);  \
-  } while(0)
-  
   uint32_t inst = cpu_fetch32(cpu);
   log_dbg("inst %#x, pc: %#x", inst, cpu->pc);
   uint8_t op = OPCODE(inst);
@@ -91,7 +70,12 @@ int cpu_step(struct cpu *cpu) {
       rv32i_auipc(cpu, rd, imm);
       break;
     case OP_JAL:
-      DECODE_J();
+      sinst = (int32_t)inst;
+      imm = ((sinst >> 31) << 20) |
+            (((sinst >> 12) & 0xff) << 12) |
+            (((sinst >> 20) & 1) << 11) |
+            (((sinst >> 21) & 0x3ff) << 1);
+      log_dbg("J: rd %d imm %d", rd, imm);
       rv32i_jal(cpu, rd, imm);
       break;
     case OP_JALR:
@@ -153,7 +137,7 @@ int cpu_step(struct cpu *cpu) {
       break;
     case STORE:
       sinst = (int32_t)inst;
-      imm = (((sinst >> 25) & 0x7f) << 5) | ((sinst >> 7) & 0x1f);
+      imm = ((sinst >> 25) << 5) | ((sinst >> 7) & 0x1f);
       log_dbg("S: f3 %d rs1 %d rs2 %d imm %d", funct3, rs1, rs2, imm);
       switch(funct3) {
         case OP_SB:
@@ -171,7 +155,7 @@ int cpu_step(struct cpu *cpu) {
       break;
     case ARITH_IMM:
       imm = (int32_t)inst >> 20;
-      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);
       switch(funct3) {
         case OP_ADDI:
           rv32i_addi(cpu, rd, rs1, imm);
@@ -273,6 +257,9 @@ int cpu_step(struct cpu *cpu) {
         case PRIV:
           switch(imm) {
             case OP_ECALL:
+              if(regread(cpu, 3) & 1) {
+                goto err;
+              }
               raise(cpu, ENV_CALL_FROM_M, 0);
               break;
             case OP_EBREAK:
@@ -318,7 +305,11 @@ int cpu_step(struct cpu *cpu) {
 err:
   /* TODO: raise IllegalInstruction exception */
   regdump(cpu);
+  if(regread(cpu, 3) == 1) {
+    puts("maybe passed");
+    exit(0);
+  }
   panic("unknown opcode %#x", op);
-  return 0;
+  return 1;
 }
 
