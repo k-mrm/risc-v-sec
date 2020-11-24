@@ -20,6 +20,8 @@
 #define MSTATUS_TSR (1 << 22)
 #define MSTATUS_SD ((reg_t)1 << (XLEN-1))
 
+#define MSTATUS_MPP_SHIFT (11)
+
 enum exception {
   INST_ADDR_MISALIGNED  = 0,
   INST_ACCESS_FAULT     = 1,

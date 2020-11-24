@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "cpu.h"
 #include "inst.h"
 #include "rv32i.h"
@@ -10,6 +11,7 @@ struct cpu *new_cpu() {
   struct cpu *cpu = malloc(sizeof(struct cpu));
   cpu->bus = new_sysbus();
   cpu->pc = 0;
+  memset(cpu->csrs, 0, sizeof(cpu->csrs));
   return cpu;
 }
 

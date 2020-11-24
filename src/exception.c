@@ -15,3 +15,14 @@ void raise(struct cpu *cpu, enum exception e, reg_t mtval) {
   else
     csrwrite(cpu->csrs, MSTATUS, (mstatus & ~MSTATUS_MIE) & ~MSTATUS_MPIE);
 }
+
+void mret(struct cpu *cpu) {
+  cpu->nextpc = csrread(cpu->csrs, MEPC);
+  cpu->priv = (csrread(cpu->csrs, MSTATUS) >> MSTATUS_MPP_SHIFT) & 3;
+  reg_t mpie = (csrread(cpu->csrs, MSTATUS) & MSTATUS_MPIE) != 0;
+  if(mpie)
+    csrwrite(cpu->csrs, MSTATUS, csrread(cpu->csrs, MSTATUS) | MSTATUS_MIE);
+  else
+    csrwrite(cpu->csrs, MSTATUS, csrread(cpu->csrs, MSTATUS) & ~MSTATUS_MIE);
+  csrwrite(cpu->csrs, MSTATUS, csrread(cpu->csrs, MSTATUS) | MSTATUS_MPIE);
+}
