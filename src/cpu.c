@@ -12,6 +12,7 @@ struct cpu *new_cpu() {
   cpu->bus = new_sysbus();
   cpu->pc = 0;
   memset(cpu->csrs, 0, sizeof(cpu->csrs));
+  cpu->shstk = new_shadowstack();
   return cpu;
 }
 
@@ -270,6 +271,7 @@ int cpu_step(struct cpu *cpu) {
             case OP_SRET:
               break;
             case OP_MRET:
+              mret(cpu);
               break;
             default:
               goto err;

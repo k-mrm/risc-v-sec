@@ -53,5 +53,6 @@ enum interrupt {
 };
 
 void raise(struct cpu *cpu, enum exception e, reg_t mtval);
+void mret(struct cpu *cpu);
 
 #endif

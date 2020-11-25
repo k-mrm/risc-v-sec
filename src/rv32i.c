@@ -1,4 +1,5 @@
 #include "rv32i.h"
+#include "security.h"
 
 void rv32i_lui(struct cpu *cpu, uint8_t rd, int32_t imm) {
   regwrite(cpu, rd, imm);
@@ -9,13 +10,21 @@ void rv32i_auipc(struct cpu *cpu, uint8_t rd, int32_t imm) {
 }
 
 void rv32i_jal(struct cpu *cpu, uint8_t rd, int32_t off) {
-  regwrite(cpu, rd, cpu->pc + 4);
+  reg_t nextop_pc = cpu->pc + 4;
+  regwrite(cpu, rd, nextop_pc);
+  if(rd == 1) { /* ra register */
+    shstk_push(cpu, nextop_pc);
+  }
+
   cpu->nextpc = cpu->pc + off;
 }
 
 void rv32i_jalr(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t t = cpu->pc + 4;
   cpu->nextpc = (regread(cpu, rs1) + off) & ~1;
+  if(rd == 0 && rs1 == 1 && off == 0) { /* ret */
+    shstk_check(cpu, cpu->nextpc);
+  }
   regwrite(cpu, rd, t);
 }
 
