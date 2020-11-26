@@ -13,7 +13,8 @@ void panic(char *s, ...) {
   exit(1);
 }
 
-void log_dbg(char *s, ...) {
+#ifndef NDEBUG
+void log_debug(char *s, ...) {
   va_list args;
   va_start(args, s);
   fprintf(stderr, "[debug] ");
@@ -21,3 +22,4 @@ void log_dbg(char *s, ...) {
   fprintf(stderr, "\n");
   va_end(args);
 }
+#endif
