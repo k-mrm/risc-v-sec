@@ -21,7 +21,7 @@ struct cpu {
   reg_t csrs[4096];
   struct sysbus *bus;
   enum priv priv;
-  reg_t *shstk; /* shadow stack */
+  struct shadowstack *shstk; /* shadow stack */
 };
 
 struct cpu *new_cpu(void);

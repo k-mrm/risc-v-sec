@@ -3,26 +3,42 @@
 #include <string.h>
 #include "security.h"
 #include "cpu.h"
+#include "exception.h"
 #include "log.h"
 
-reg_t *new_shadowstack() {
-  reg_t *s = malloc(sizeof(reg_t) * 128);
-  memset(s, 0, sizeof(reg_t) * 128);
+struct shadowstack *new_shadowstack() {
+  struct shadowstack *s = malloc(sizeof(*s));
+  s->reserved = 128;
+  s->data = malloc(sizeof(reg_t) * s->reserved);
+  memset(s->data, 0, sizeof(reg_t) * s->reserved);
+  s->depth = 0;
   return s;
 }
 
+static void shstk_expand(struct shadowstack *s) {
+  s->reserved *= 2;
+  s->data = realloc(s->data, sizeof(reg_t) * s->reserved);
+}
+
 void shstk_push(struct cpu *cpu, reg_t addr) {
-  *cpu->shstk++ = addr;
+  if(cpu->shstk->depth == cpu->shstk->reserved) {
+    shstk_expand(cpu->shstk);
+  }
+  cpu->shstk->depth++;
+  *cpu->shstk->data++ = addr;
 }
 
 static reg_t shstk_pop(struct cpu *cpu) {
-  return *--cpu->shstk;
+  if(cpu->shstk->depth-- == 0) {
+    panic("shadow stack crushed");
+  }
+  return *--cpu->shstk->data;
 }
 
 void shstk_check(struct cpu *cpu, reg_t addr) {
   reg_t expected = shstk_pop(cpu);
 
   if(addr != expected) {
-    panic("return address rewriting detected!");
+    raise(cpu, RETURN_ADDR_REWRITED, 0);
   }
 }
