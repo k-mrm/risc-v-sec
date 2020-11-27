@@ -38,6 +38,8 @@ enum exception {
   INST_PAGEFAULT        = 12,
   LOAD_PAGEFAULT        = 13,
   STORE_PAGEFAULT       = 15,
+  /* original */
+  RETURN_ADDR_REWRITED  = 16,
 };
 
 enum interrupt {
