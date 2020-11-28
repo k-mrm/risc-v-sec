@@ -109,6 +109,7 @@ void rv32i_sh(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
 void rv32i_sw(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
   uint32_t src = (uint32_t)regread(cpu, rs2);
+  printf("addr: %u, reg[sp] %u\n", addr, regread(cpu, 2));
   sysbus_write32(cpu->bus, addr, src);
 }
 

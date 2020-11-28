@@ -3,7 +3,7 @@
 
 struct sysbus *new_sysbus() {
   struct sysbus *s = malloc(sizeof(struct sysbus));
-  s->mem = new_mem(1024 * 1024);
+  s->mem = new_mem(128 * 1024 * 1024);
   return s;
 }
 

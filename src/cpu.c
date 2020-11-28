@@ -11,6 +11,7 @@ struct cpu *new_cpu() {
   struct cpu *cpu = malloc(sizeof(struct cpu));
   cpu->bus = new_sysbus();
   cpu->pc = 0;
+  cpu->x[2] = 1024 * 1024 * 128 - 1;
   memset(cpu->csrs, 0, sizeof(cpu->csrs));
   cpu->shstk = new_shadowstack();
   return cpu;
