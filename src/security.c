@@ -21,6 +21,7 @@ static void shstk_expand(struct shadowstack *s) {
 }
 
 void shstk_push(struct cpu *cpu, reg_t addr) {
+  log_dbg("!!!!!!!!!!!!!shstk push!!");
   if(cpu->shstk->depth == cpu->shstk->reserved) {
     shstk_expand(cpu->shstk);
   }
@@ -30,15 +31,17 @@ void shstk_push(struct cpu *cpu, reg_t addr) {
 
 static reg_t shstk_pop(struct cpu *cpu) {
   if(cpu->shstk->depth-- == 0) {
-    panic("shadow stack crushed");
+    panic("stack corruption has been detected");
   }
   return *--cpu->shstk->data;
 }
 
 void shstk_check(struct cpu *cpu, reg_t addr) {
+  log_dbg("!!!!!!!!!!!!!!!!!!shstk check");
   reg_t expected = shstk_pop(cpu);
 
   if(addr != expected) {
     raise(cpu, RETURN_ADDR_REWRITED, 0);
+    panic("return address rewrited");
   }
 }

@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS = -Wall -Wextra -I ./include/ -Og -g #-DNDEBUG
+CFLAGS = -Wall -Wextra -I ./include/ -Og -g -DNDEBUG
 SRCROOT = ./src
 SRCDIRS := $(shell find $(SRCROOT) -type d)
 SRCS=$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.c))
