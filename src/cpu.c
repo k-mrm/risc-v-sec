@@ -4,6 +4,7 @@
 #include "cpu.h"
 #include "inst.h"
 #include "rv32i.h"
+#include "rv32m.h"
 #include "log.h"
 #include "exception.h"
 
@@ -197,35 +198,41 @@ int cpu_step(struct cpu *cpu) {
       }
       break;
     case ARITH:
-      switch(funct3) {
-        case ADDSUB:
-          switch(funct7) {
+      switch(funct7) {
+        case 0b0000000:
+          switch(funct3) {
             case OP_ADD:
               rv32i_add(cpu, rd, rs1, rs2);
               break;
-            case OP_SUB:
-              rv32i_sub(cpu, rd, rs1, rs2);
+            case OP_SLL:
+              rv32i_sll(cpu, rd, rs1, rs2);
+              break;
+            case OP_SLT:
+              rv32i_slt(cpu, rd, rs1, rs2);
+              break;
+            case OP_SLTU:
+              rv32i_sltu(cpu, rd, rs1, rs2);
+              break;
+            case OP_XOR:
+              rv32i_xor(cpu, rd, rs1, rs2);
+              break;
+            case OP_SRL:
+              rv32i_srl(cpu, rd, rs1, rs2);
+              break;
+            case OP_OR:
+              rv32i_or(cpu, rd, rs1, rs2);
+              break;
+            case OP_AND:
+              rv32i_and(cpu, rd, rs1, rs2);
               break;
             default:
               goto err;
           }
           break;
-        case OP_SLL:
-          rv32i_sll(cpu, rd, rs1, rs2);
-          break;
-        case OP_SLT:
-          rv32i_slt(cpu, rd, rs1, rs2);
-          break;
-        case OP_SLTU:
-          rv32i_sltu(cpu, rd, rs1, rs2);
-          break;
-        case OP_XOR:
-          rv32i_xor(cpu, rd, rs1, rs2);
-          break;
-        case SRX:
-          switch(funct7) {
-            case OP_SRL:
-              rv32i_srl(cpu, rd, rs1, rs2);
+        case 0b0100000:
+          switch(funct3) {
+            case OP_SUB:
+              rv32i_sub(cpu, rd, rs1, rs2);
               break;
             case OP_SRA:
               rv32i_sra(cpu, rd, rs1, rs2);
@@ -234,11 +241,35 @@ int cpu_step(struct cpu *cpu) {
               goto err;
           }
           break;
-        case OP_OR:
-          rv32i_or(cpu, rd, rs1, rs2);
-          break;
-        case OP_AND:
-          rv32i_and(cpu, rd, rs1, rs2);
+        case 0b0000001:
+          switch(funct7) {
+            case OP_MUL:
+              rv32m_mul(cpu, rd, rs1, rs2);
+              break;
+            case OP_MULH:
+              rv32m_mulh(cpu, rd, rs1, rs2);
+              break;
+            case OP_MULHSU:
+              rv32m_mulhsu(cpu, rd, rs1, rs2);
+              break;
+            case OP_MULHU:
+              rv32m_mulhu(cpu, rd, rs1, rs2);
+              break;
+            case OP_DIV:
+              rv32m_div(cpu, rd, rs1, rs2);
+              break;
+            case OP_DIVU:
+              rv32m_divu(cpu, rd, rs1, rs2);
+              break;
+            case OP_REM:
+              rv32m_rem(cpu, rd, rs1, rs2);
+              break;
+            case OP_REMU:
+              rv32m_remu(cpu, rd, rs1, rs2);
+              break;
+            default:
+              goto err;
+          }
           break;
         default:
           goto err;

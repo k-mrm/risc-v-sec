@@ -1,5 +1,5 @@
-#ifndef RISC_V_SEC_RV32I_OP_H
-#define RISC_V_SEC_RV32I_OP_H
+#ifndef RISC_V_SEC_RV32I_H
+#define RISC_V_SEC_RV32I_H
 
 #include <stdint.h>
 #include "risc-v-sec.h"
@@ -38,16 +38,14 @@
 #   define OP_SRLI    0b0000000
 #   define OP_SRAI    0b0100000
 #define ARITH         0b0110011
-# define ADDSUB       0b000
-#   define OP_ADD     0b0000000
-#   define OP_SUB     0b0100000
+# define OP_ADD       0b000
+# define OP_SUB       0b000
 # define OP_SLL       0b001
 # define OP_SLT       0b010
 # define OP_SLTU      0b011
 # define OP_XOR       0b100
-# define SRX          0b101
-#   define OP_SRL     0b0000000
-#   define OP_SRA     0b0100000
+# define OP_SRL       0b101
+# define OP_SRA       0b101
 # define OP_OR        0b110
 # define OP_AND       0b111
 #define MISC_MEM      0b0001111
