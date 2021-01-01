@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "system-bus.h"
+#include "memmap.h"
 #include "uart.h"
 
 struct sysbus *new_sysbus() {
@@ -13,7 +14,7 @@ uint8_t sysbus_read8(struct sysbus *bus, reg_t addr) {
 }
 
 void sysbus_write8(struct sysbus *bus, reg_t addr, uint8_t src) {
-  if(addr == UART0) {
+  if(UART0 <= addr && addr < UARTEND) {
     uartwrite(addr, src);
   }
   else {

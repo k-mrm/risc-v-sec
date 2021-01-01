@@ -1,0 +1,12 @@
+#ifndef RISC_V_SEC_MEMMAP_H
+#define RISC_V_SEC_MEMMAP_H
+
+#define UART0 0x10000000
+#define UARTSIZE 0x100
+#define UARTEND (UART0 + UARTSIZE)
+
+#define CLINT 0x2000000
+#define CLINTSIZE 0x10000
+#define CLINTEND  (CLINT + CLINTSIZE)
+
+#endif
