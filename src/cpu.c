@@ -5,6 +5,7 @@
 #include "inst.h"
 #include "rv32i.h"
 #include "rv32m.h"
+#include "rv32a.h"
 #include "log.h"
 #include "exception.h"
 
@@ -61,6 +62,9 @@ int cpu_step(struct cpu *cpu) {
   uint8_t rs2 = RS2(inst);
   uint8_t shamt = RS2(inst);
   uint8_t funct7 = FUNCT7(inst);
+  uint8_t funct5 = FUNCT5(inst);
+  uint8_t rl = RL(inst);
+  uint8_t aq = AQ(inst);
   int32_t imm, sinst;
 
   switch(op) {
@@ -326,6 +330,40 @@ int cpu_step(struct cpu *cpu) {
           break;
         case OP_CSRRCI:
           rv32i_csrrci(cpu, rd, rs1, (uint32_t)imm);
+          break;
+        default:
+          goto err;
+      }
+      break;
+    case AMO:
+      log_dbg("amo: funct5 %d rd %d rs1 %d rs2 %d", funct5, rd, rs1, rs2);
+      switch(funct5) {
+        case OP_AMOSWAP:
+          rv32a_amoswap_w(cpu, rd, rs1, rs2);
+          break;
+        case OP_AMOADD:
+          rv32a_amoadd_w(cpu, rd, rs1, rs2);
+          break;
+        case OP_AMOXOR:
+          rv32a_amoxor_w(cpu, rd, rs1, rs2);
+          break;
+        case OP_AMOAND:
+          rv32a_amoand_w(cpu, rd, rs1, rs2);
+          break;
+        case OP_AMOOR:
+          rv32a_amoor_w(cpu, rd, rs1, rs2);
+          break;
+        case OP_AMOMIN:
+          rv32a_amomin_w(cpu, rd, rs1, rs2);
+          break;
+        case OP_AMOMAX:
+          rv32a_amomax_w(cpu, rd, rs1, rs2);
+          break;
+        case OP_AMOMINU:
+          rv32a_amominu_w(cpu, rd, rs1, rs2);
+          break;
+        case OP_AMOMAXU:
+          rv32a_amomaxu_w(cpu, rd, rs1, rs2);
           break;
         default:
           goto err;
