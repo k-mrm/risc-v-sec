@@ -9,4 +9,6 @@
 #define CLINTSIZE 0x10000
 #define CLINTEND  (CLINT + CLINTSIZE)
 
+#define DRAM  0x80000000
+
 #endif

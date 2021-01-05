@@ -38,20 +38,8 @@ enum exception {
   INST_PAGEFAULT        = 12,
   LOAD_PAGEFAULT        = 13,
   STORE_PAGEFAULT       = 15,
-  /* original */
-  RETURN_ADDR_REWRITED  = 16,
-};
 
-enum interrupt {
-  USER_SOFTWARE_INT     = 0,
-  SUPERV_SOFTWARE_INT   = 1,
-  MACHINE_SOFTWARE_INT  = 3,
-  USER_TIMER_INT        = 4,
-  SUPERV_TIMER_INT      = 5,
-  MACHINE_TIMER_INT     = 7,
-  USER_EXTERNAL_INT     = 8,
-  SUPERV_EXTERNAL_INT   = 9,
-  MACHINE_EXTERNAL_INT  = 11,
+  RETURN_ADDR_REWRITED  = 16,
 };
 
 void raise(struct cpu *cpu, enum exception e, reg_t mtval);

@@ -16,6 +16,7 @@ struct cpu *new_cpu() {
   cpu->x[2] = 1024 * 1024 * 128 - 1;
   memset(cpu->csrs, 0, sizeof(cpu->csrs));
   cpu->shstk = new_shadowstack();
+  cpu->priv = MACHINE;
   return cpu;
 }
 
@@ -24,7 +25,6 @@ void free_cpu(struct cpu *cpu) {
 }
 
 static uint32_t cpu_fetch32(struct cpu *cpu) {
-  cpu->nextpc = cpu->pc + 4;
   return sysbus_read32(cpu->bus, cpu->pc);
 }
 
@@ -54,6 +54,8 @@ static void regdump(struct cpu *cpu) {
 
 int cpu_step(struct cpu *cpu) {
   uint32_t inst = cpu_fetch32(cpu);
+  cpu->nextpc = cpu->pc + 4;
+
   log_dbg("inst %#x, pc: %#x", inst, cpu->pc);
   uint8_t op = OPCODE(inst);
   uint8_t rd = RD(inst);
@@ -89,7 +91,7 @@ int cpu_step(struct cpu *cpu) {
       break;
     case OP_JALR:
       imm = (int32_t)inst >> 20;
-      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);
       rv32i_jalr(cpu, rd, rs1, imm);
       break;
     case BRANCH:
@@ -123,7 +125,7 @@ int cpu_step(struct cpu *cpu) {
       break;
     case LOAD:
       imm = (int32_t)inst >> 20;
-      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);
       switch(funct3) {
         case OP_LB:
           rv32i_lb(cpu, rd, rs1, imm);
@@ -281,7 +283,7 @@ int cpu_step(struct cpu *cpu) {
       break;
     case MISC_MEM:
       imm = inst >> 20;
-      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);
       /* TODO */
       switch(funct3) {
         case OP_FENCE: break;
@@ -290,7 +292,7 @@ int cpu_step(struct cpu *cpu) {
       break;
     case SYSTEM:
       imm = inst >> 20;
-      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);  \
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);
       log_dbg("imm:%x", imm);
       switch(funct3) {
         case PRIV:
@@ -299,7 +301,7 @@ int cpu_step(struct cpu *cpu) {
               if(regread(cpu, 3) & 1) {
                 goto err;
               }
-              raise(cpu, ENV_CALL_FROM_M, 0);
+              raise(cpu, ENV_CALL_FROM_U + cpu->priv, 0);
               break;
             case OP_EBREAK:
               raise(cpu, BREAKPOINT, 0);
@@ -308,6 +310,8 @@ int cpu_step(struct cpu *cpu) {
               break;
             case OP_MRET:
               mret(cpu);
+              break;
+            case OP_WFI:
               break;
             default:
               goto err;

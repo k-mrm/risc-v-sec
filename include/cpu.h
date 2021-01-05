@@ -10,7 +10,7 @@
 enum priv {
   USER = 0,
   SUPERVISOR = 1,
-  HYPERVISOR = 2,
+  HYPERVISOR = 2, /* reserved */
   MACHINE = 3,
 };
 
