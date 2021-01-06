@@ -3,32 +3,92 @@
 #include "csr.h"
 #include "log.h"
 
-void raise(struct cpu *cpu, enum exception e, reg_t mtval) {
-  reg_t mstatus = csrread(cpu->csrs, MSTATUS);
-  reg_t mie = (mstatus & MSTATUS_MIE) != 0;
-  csrwrite(cpu->csrs, MEPC, cpu->pc);
-  cpu->nextpc = csrread(cpu->csrs, MTVEC) & ~(reg_t)3;
-  log_dbg("raise: pc %#x", cpu->nextpc);
-  csrwrite(cpu->csrs, MCAUSE, e);
-  csrwrite(cpu->csrs, MTVAL, mtval);
-  if(mie)
-    csrwrite(cpu->csrs, MSTATUS, (mstatus & ~MSTATUS_MIE) | MSTATUS_MPIE);
-  else
-    csrwrite(cpu->csrs, MSTATUS, (mstatus & ~MSTATUS_MIE) & ~MSTATUS_MPIE);
+void raise(struct cpu *cpu, enum exception e, reg_t tval) {
+  reg_t medeleg = csrread(cpu->csrs, MEDELEG);
 
-  mstatus = csrread(cpu->csrs, MSTATUS);
-  csrwrite(cpu->csrs, MSTATUS, mstatus | (cpu->priv << MSTATUS_MPP_SHIFT));
+  if(cpu->priv <= SUPERVISOR && ((medeleg >> e) & 1)) {
+    reg_t sstatus = csrread(cpu->csrs, SSTATUS);
 
-  cpu->priv = MACHINE;
+    csrwrite(cpu->csrs, SEPC, cpu->pc & ~(reg_t)1);
+
+    cpu->nextpc = csrread(cpu->csrs, STVEC) & ~(reg_t)3;
+    
+    /* sstatus.spie = sstatus.sie */
+    reg_t sie = sstatus & SSTATUS_SIE;
+    csrwrite(cpu->csrs, SSTATUS, (sstatus & ~SSTATUS_SPIE) | (sie << SSTATUS_SPIE_SHIFT));
+
+    /* sstatus.sie = 0 */
+    sstatus = csrread(cpu->csrs, SSTATUS);
+    csrwrite(cpu->csrs, SSTATUS, sstatus & ~SSTATUS_SIE);
+
+    csrwrite(cpu->csrs, SCAUSE, e);
+
+    csrwrite(cpu->csrs, STVAL, tval);
+
+    /* sstatus.spp = cpu->priv */
+    sstatus = csrread(cpu->csrs, SSTATUS);
+    csrwrite(cpu->csrs, SSTATUS, (sstatus & ~SSTATUS_SPP) | (cpu->priv << SSTATUS_SPP_SHIFT));
+
+    cpu->priv = SUPERVISOR;
+  }
+  else {
+    reg_t mstatus = csrread(cpu->csrs, MSTATUS);
+
+    csrwrite(cpu->csrs, MEPC, cpu->pc & ~(reg_t)1);
+
+    cpu->nextpc = csrread(cpu->csrs, MTVEC) & ~(reg_t)3;
+
+    /* mstatus.mpie = mstatus.mie */
+    reg_t mie = mstatus & MSTATUS_MIE;
+    csrwrite(cpu->csrs, MSTATUS, (mstatus & ~MSTATUS_MPIE) | (mie << MSTATUS_MPIE_SHIFT));
+
+    /* mstatus.mie = 0 */
+    mstatus = csrread(cpu->csrs, MSTATUS);
+    csrwrite(cpu->csrs, SSTATUS, mstatus & ~MSTATUS_MIE);
+
+    csrwrite(cpu->csrs, MCAUSE, e);
+
+    csrwrite(cpu->csrs, MTVAL, tval);
+
+    mstatus = csrread(cpu->csrs, MSTATUS);
+    csrwrite(cpu->csrs, MSTATUS, (mstatus & ~MSTATUS_MPP) | (cpu->priv << MSTATUS_MPP_SHIFT));
+
+    cpu->priv = MACHINE;
+  }
 }
 
 void mret(struct cpu *cpu) {
-  cpu->nextpc = csrread(cpu->csrs, MEPC);
-  cpu->priv = (csrread(cpu->csrs, MSTATUS) >> MSTATUS_MPP_SHIFT) & 3;
+  /* mstatus.mie = mstatus.mpie */
+  reg_t mstatus = csrread(cpu->csrs, MSTATUS);
   reg_t mpie = (csrread(cpu->csrs, MSTATUS) & MSTATUS_MPIE) != 0;
-  if(mpie)
-    csrwrite(cpu->csrs, MSTATUS, csrread(cpu->csrs, MSTATUS) | MSTATUS_MIE);
-  else
-    csrwrite(cpu->csrs, MSTATUS, csrread(cpu->csrs, MSTATUS) & ~MSTATUS_MIE);
+  csrwrite(cpu->csrs, MSTATUS, (mstatus & ~MSTATUS_MIE) | (mpie << MSTATUS_MIE_SHIFT));
+
+  /* cpu->priv = mstatus.mpp */
+  cpu->priv = (csrread(cpu->csrs, MSTATUS) >> MSTATUS_MPP_SHIFT) & 3;
+
+  /* mstatus.mpie = 0(USER) */
   csrwrite(cpu->csrs, MSTATUS, csrread(cpu->csrs, MSTATUS) | MSTATUS_MPIE);
+
+  /* mstatus.mpp = 0(USER) */
+  csrwrite(cpu->csrs, MSTATUS, csrread(cpu->csrs, MSTATUS) & ~MSTATUS_MPP);
+
+  cpu->nextpc = csrread(cpu->csrs, MEPC);
+}
+
+void sret(struct cpu *cpu) {
+  /* sstatus.sie = sstatus.spie */
+  reg_t sstatus = csrread(cpu->csrs, SSTATUS);
+  reg_t spie = sstatus & SSTATUS_SPIE;
+  csrwrite(cpu->csrs, SSTATUS, (sstatus & ~SSTATUS_SIE) | (spie << SSTATUS_SIE_SHIFT));
+
+  /* cpu->priv = sstatus.spp */
+  cpu->priv = (csrread(cpu->csrs, SSTATUS) >> SSTATUS_SPP_SHIFT) & 3;
+
+  /* sstatus.spie = 1 */
+  csrwrite(cpu->csrs, SSTATUS, csrread(cpu->csrs, SSTATUS) | SSTATUS_SPIE);
+
+  /* sstatus.spp = 0(USER) */
+  csrwrite(cpu->csrs, SSTATUS, csrread(cpu->csrs, SSTATUS) & ~SSTATUS_SPP);
+
+  cpu->nextpc = csrread(cpu->csrs, SEPC);
 }
