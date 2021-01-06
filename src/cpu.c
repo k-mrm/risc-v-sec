@@ -14,10 +14,16 @@ struct cpu *new_cpu() {
   cpu->bus = new_sysbus();
   cpu->pc = 0;
   cpu->x[2] = 1024 * 1024 * 128 - 1;
-  memset(cpu->csrs, 0, sizeof(cpu->csrs));
+  reset_csr(cpu->csrs);
   cpu->shstk = new_shadowstack();
   cpu->priv = MACHINE;
   return cpu;
+}
+
+void reset_cpu(struct cpu *cpu) {
+  cpu->pc = 0;
+  cpu->priv = MACHINE;
+  reset_csr(cpu->csrs);
 }
 
 void free_cpu(struct cpu *cpu) {
@@ -307,6 +313,7 @@ int cpu_step(struct cpu *cpu) {
               raise(cpu, BREAKPOINT, 0);
               break;
             case OP_SRET:
+              sret(cpu);
               break;
             case OP_MRET:
               mret(cpu);
