@@ -7,8 +7,8 @@ void rv32m_mul(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
 }
 
 void rv32m_mulh(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
-  dsreg_t src1 = (dsreg_t)regread(cpu, rs1);
-  dsreg_t src2 = (dsreg_t)regread(cpu, rs2);
+  dsreg_t src1 = (dsreg_t)(sreg_t)regread(cpu, rs1);
+  dsreg_t src2 = (dsreg_t)(sreg_t)regread(cpu, rs2);
   sreg_t src = (sreg_t)((src1 * src2) >> XLEN);
   regwrite(cpu, rd, src);
 }
