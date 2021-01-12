@@ -10,7 +10,7 @@
 #define OP_SD 0b011
 
 #define OP_IMM_32 0b0011011
-# define OP_ADDIW 0b0000
+# define OP_ADDIW 0b000
 # define OP_SLLIW 0b001
 # define SRXIW 0b101
 #   define OP_SRLIW 0b000000

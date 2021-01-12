@@ -4,6 +4,7 @@
 #include "cpu.h"
 #include "inst.h"
 #include "rv32i.h"
+#include "rv64i.h"
 #include "rv32m.h"
 #include "rv32a.h"
 #include "log.h"
@@ -285,6 +286,59 @@ int cpu_step(struct cpu *cpu) {
           break;
         default:
           goto err;
+      }
+      break;
+    case OP_IMM_32:
+      imm = (int32_t)inst >> 20;
+      log_dbg("I: rd %d f3 %d rs1 %d imm %d f7 %d", rd, funct3, rs1, imm, funct7);
+      switch(funct3) {
+        case OP_ADDIW:
+          rv64i_addiw(cpu, rd, rs1, imm);
+          break;
+        case OP_SLLIW:
+          rv64i_slliw(cpu, rd, rs1, (uint8_t)imm);
+          break;
+        case SRXIW:
+          switch(funct7) {
+            case OP_SRLIW:
+              rv64i_srliw(cpu, rd, rs1, (uint8_t)imm);
+              break;
+            case OP_SRAIW:
+              rv64i_sraiw(cpu, rd, rs1, (uint8_t)imm);
+              break;
+            default:
+              goto err;
+          }
+          break;
+        default:
+          goto err;
+      }
+      break;
+    case OP_32:
+      switch(funct3) {
+        case ADDSUBW:
+          switch(funct7) {
+            case OP_ADDW:
+              rv64i_addw(cpu, rd, rs1, rs2);
+              break;
+            case OP_SUBW:
+              rv64i_subw(cpu, rd, rs1, rs2);
+              break;
+          }
+          break;
+        case OP_SLLW:
+          rv64i_sllw(cpu, rd, rs1, rs2);
+          break;
+        case SRXW:
+          switch(funct7) {
+            case OP_SRLW:
+              rv64i_srlw(cpu, rd, rs1, rs2);
+              break;
+            case OP_SRAW:
+              rv64i_sraw(cpu, rd, rs1, rs2);
+              break;
+          }
+          break;
       }
       break;
     case MISC_MEM:
