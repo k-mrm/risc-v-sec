@@ -51,3 +51,33 @@ void sysbus_write32(struct sysbus *bus, reg_t addr, uint32_t src) {
   sysbus_write8(bus, addr + 2, b2);
   sysbus_write8(bus, addr + 3, b3);
 }
+
+uint64_t sysbus_read64(struct sysbus *bus, reg_t addr) {
+  return (uint32_t)sysbus_read8(bus, addr) |
+         (uint32_t)sysbus_read8(bus, addr+1) << 8 |
+         (uint32_t)sysbus_read8(bus, addr+2) << 16 |
+         (uint32_t)sysbus_read8(bus, addr+3) << 24 |
+         (uint32_t)sysbus_read8(bus, addr+4) << 32 |
+         (uint32_t)sysbus_read8(bus, addr+5) << 40 |
+         (uint32_t)sysbus_read8(bus, addr+6) << 48 |
+         (uint32_t)sysbus_read8(bus, addr+7) << 56; 
+}
+
+void sysbus_write64(struct sysbus *bus, reg_t addr, uint64_t src) {
+  uint8_t b7 = (src >> 56) & 0xff;
+  uint8_t b6 = (src >> 48) & 0xff;
+  uint8_t b5 = (src >> 40) & 0xff;
+  uint8_t b4 = (src >> 32) & 0xff;
+  uint8_t b3 = (src >> 24) & 0xff;
+  uint8_t b2 = (src >> 16) & 0xff;
+  uint8_t b1 = (src >> 8) & 0xff;
+  uint8_t b0 = src & 0xff;
+  sysbus_write8(bus, addr, b0);
+  sysbus_write8(bus, addr + 1, b1);
+  sysbus_write8(bus, addr + 2, b2);
+  sysbus_write8(bus, addr + 3, b3);
+  sysbus_write8(bus, addr + 4, b4);
+  sysbus_write8(bus, addr + 5, b5);
+  sysbus_write8(bus, addr + 6, b6);
+  sysbus_write8(bus, addr + 7, b7);
+}

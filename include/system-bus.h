@@ -18,4 +18,7 @@ void sysbus_write16(struct sysbus *bus, reg_t addr, uint16_t src);
 uint32_t sysbus_read32(struct sysbus *bus, reg_t addr);
 void sysbus_write32(struct sysbus *bus, reg_t addr, uint32_t src);
 
+uint64_t sysbus_read64(struct sysbus *bus, reg_t addr);
+void sysbus_write64(struct sysbus *bus, reg_t addr, uint64_t src);
+
 #endif

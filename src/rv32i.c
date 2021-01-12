@@ -169,7 +169,12 @@ void rv32i_sub(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
 }
 
 void rv32i_sll(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
-  reg_t a = regread(cpu, rs1) << regread(cpu, rs2);
+#if XLEN == 64
+  uint8_t shift = regread(cpu, rs2) & 0x3f;
+#elif XLEN == 32
+  uint8_t shift = regread(cpu, rs2) & 0x1f;
+#endif
+  reg_t a = regread(cpu, rs1) << shift;
   regwrite(cpu, rd, a);
 }
 

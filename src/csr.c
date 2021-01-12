@@ -1,3 +1,4 @@
+#include <string.h>
 #include "risc-v-sec.h"
 #include "csr.h"
 #include "cpu.h"
@@ -14,7 +15,7 @@ void reset_csr(reg_t *csrs) {
   /* SMIA */
   reg_t misa = (MXL << (XLEN-2)) | (1 << 18) | (1 << 12) | (1 << 8) | (1 << 0);
 
-  csrwrite(csrs, MISA);
+  csrwrite(csrs, MISA, misa);
 }
 
 reg_t csrread(reg_t *csrs, enum csr c) {
