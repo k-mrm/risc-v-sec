@@ -33,7 +33,7 @@ void rv64i_srliw(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t shamt) {
 }
 
 void rv64i_sraiw(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t shamt) {
-  sreg_t v = (sreg_t)(int32_t)((sreg_t)(int32_t)(regread(cpu, rs1) & 0xffffffff) >> shamt);
+  sreg_t v = (sreg_t)(int32_t)((int32_t)(regread(cpu, rs1) & 0xffffffff) >> shamt);
   regwrite(cpu, rd, v);
 }
 

@@ -13,8 +13,8 @@
 # define OP_ADDIW 0b000
 # define OP_SLLIW 0b001
 # define SRXIW 0b101
-#   define OP_SRLIW 0b000000
-#   define OP_SRAIW 0b010000
+#   define OP_SRLIW 0b0000000
+#   define OP_SRAIW 0b0100000
 
 #define OP_32 0b0111011
 # define ADDSUBW  0b000

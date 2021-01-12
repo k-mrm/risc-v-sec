@@ -35,8 +35,8 @@
 # define OP_ANDI      0b111
 # define OP_SLLI      0b001
 # define SRXI         0b101
-#   define OP_SRLI    0b0000000
-#   define OP_SRAI    0b0100000
+#   define OP_SRLI    0b000000
+#   define OP_SRAI    0b010000
 #define ARITH         0b0110011
 # define OP_ADD       0b000
 # define OP_SUB       0b000

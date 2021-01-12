@@ -249,7 +249,7 @@ int cpu_step(struct cpu *cpu) {
           rv32i_slli(cpu, rd, rs1, shamt);
           break;
         case SRXI:
-          switch(funct7) {
+          switch((inst >> 26) & 0x3f) {
             case OP_SRLI:
               rv32i_srli(cpu, rd, rs1, shamt);
               break;
@@ -348,15 +348,15 @@ int cpu_step(struct cpu *cpu) {
           rv64i_addiw(cpu, rd, rs1, imm);
           break;
         case OP_SLLIW:
-          rv64i_slliw(cpu, rd, rs1, shamt);
+          rv64i_slliw(cpu, rd, rs1, rs2/* shamt */);
           break;
         case SRXIW:
           switch(funct7) {
             case OP_SRLIW:
-              rv64i_srliw(cpu, rd, rs1, shamt);
+              rv64i_srliw(cpu, rd, rs1, rs2/* shamt */);
               break;
             case OP_SRAIW:
-              rv64i_sraiw(cpu, rd, rs1, shamt);
+              rv64i_sraiw(cpu, rd, rs1, rs2/* shamt */);
               break;
             default:
               goto err;
