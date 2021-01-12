@@ -254,7 +254,7 @@ int cpu_step(struct cpu *cpu) {
           }
           break;
         case 0b0000001:
-          switch(funct7) {
+          switch(funct3) {
             case OP_MUL:
               rv32m_mul(cpu, rd, rs1, rs2);
               break;

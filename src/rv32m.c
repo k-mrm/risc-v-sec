@@ -1,4 +1,5 @@
 #include "rv32m.h"
+#include "log.h"
 
 void rv32m_mul(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
   reg_t a = regread(cpu, rs1) * regread(cpu, rs2);
@@ -24,6 +25,7 @@ void rv32m_mulhu(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
 }
 
 void rv32m_div(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  log_dbg("ddibbv");
   sreg_t src1 = (sreg_t)regread(cpu, rs1);
   sreg_t src2 = (sreg_t)regread(cpu, rs2);
   regwrite(cpu, rd, src1 / src2);
