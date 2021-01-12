@@ -8,6 +8,8 @@
 #define FUNCT5(op)  (((op) >> 27) & 0x1f)
 
 #define AMO   0b0101111
+#define OP_LR_W 0b00010
+#define OP_SC_W 0b00011
 #define OP_AMOSWAP  0b00001
 #define OP_AMOADD 0b00000
 #define OP_AMOXOR 0b00100

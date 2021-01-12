@@ -14,6 +14,12 @@ enum priv {
   MACHINE = 3,
 };
 
+struct reservation_set {
+  reg_t *addrs;
+  int size;
+  int capa;
+};
+
 struct cpu {
   reg_t x[32];
   reg_t pc;
@@ -22,6 +28,7 @@ struct cpu {
   struct sysbus *bus;
   enum priv priv;
   struct shadowstack *shstk; /* shadow stack */
+  reg_t reservation; /* for lr/sc */
 };
 
 struct cpu *new_cpu(void);
@@ -29,5 +36,15 @@ void free_cpu(struct cpu *cpu);
 int cpu_step(struct cpu *cpu);
 reg_t regread(struct cpu *cpu, int i);
 void regwrite(struct cpu *cpu, int i, reg_t data);
+
+uint8_t cpuread8(struct cpu *cpu, reg_t addr);
+uint16_t cpuread16(struct cpu *cpu, reg_t addr);
+uint32_t cpuread32(struct cpu *cpu, reg_t addr);
+uint64_t cpuread64(struct cpu *cpu, reg_t addr);
+
+void cpuwrite8(struct cpu *cpu, reg_t addr, uint8_t src);
+void cpuwrite16(struct cpu *cpu, reg_t addr, uint16_t src);
+void cpuwrite32(struct cpu *cpu, reg_t addr, uint32_t src);
+void cpuwrite64(struct cpu *cpu, reg_t addr, uint64_t src);
 
 #endif

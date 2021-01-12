@@ -2,19 +2,19 @@
 
 void rv64i_lwu(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
-  uint32_t m = sysbus_read32(cpu->bus, addr);
+  uint32_t m = cpuread32(cpu, addr);
   regwrite(cpu, rd, (reg_t)m);
 }
 
 void rv64i_ld(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
-  uint64_t m = sysbus_read64(cpu->bus, addr);
+  uint64_t m = cpuread64(cpu, addr);
   regwrite(cpu, rd, m);
 }
 
 void rv64i_sd(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
-  sysbus_write64(cpu->bus, addr, regread(cpu, rs2));
+  cpuwrite64(cpu, addr, regread(cpu, rs2));
 }
 
 void rv64i_addiw(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {

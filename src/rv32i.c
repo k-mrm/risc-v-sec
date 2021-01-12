@@ -66,50 +66,50 @@ void rv32i_bgeu(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
 
 void rv32i_lb(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
-  uint8_t m = sysbus_read8(cpu->bus, addr);
+  uint8_t m = cpuread8(cpu, addr);
   regwrite(cpu, rd, (sreg_t)(int8_t)m);
 }
 
 void rv32i_lh(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
-  uint16_t m = sysbus_read16(cpu->bus, addr);
+  uint16_t m = cpuread16(cpu, addr);
   regwrite(cpu, rd, (sreg_t)(int16_t)m);
 }
 
 void rv32i_lw(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
-  uint32_t m = sysbus_read32(cpu->bus, addr);
+  uint32_t m = cpuread32(cpu, addr);
   regwrite(cpu, rd, (sreg_t)(int32_t)m);
 }
 
 void rv32i_lbu(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
-  uint8_t m = sysbus_read8(cpu->bus, addr);
+  uint8_t m = cpuread8(cpu, addr);
   regwrite(cpu, rd, (reg_t)m);
 }
 
 void rv32i_lhu(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
-  uint16_t m = sysbus_read16(cpu->bus, addr);
+  uint16_t m = cpuread16(cpu, addr);
   regwrite(cpu, rd, (reg_t)m);
 }
 
 void rv32i_sb(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
   uint8_t src = (uint8_t)regread(cpu, rs2);
-  sysbus_write8(cpu->bus, addr, src);
+  cpuwrite8(cpu, addr, src);
 }
 
 void rv32i_sh(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
   uint16_t src = (uint16_t)regread(cpu, rs2);
-  sysbus_write16(cpu->bus, addr, src);
+  cpuwrite16(cpu, addr, src);
 }
 
 void rv32i_sw(struct cpu *cpu, uint8_t rs1, uint8_t rs2, int32_t off) {
   reg_t addr = regread(cpu, rs1) + off;
   uint32_t src = (uint32_t)regread(cpu, rs2);
-  sysbus_write32(cpu->bus, addr, src);
+  cpuwrite32(cpu, addr, src);
 }
 
 void rv32i_addi(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {

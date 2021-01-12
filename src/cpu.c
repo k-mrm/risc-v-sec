@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "cpu.h"
 #include "inst.h"
 #include "rv32i.h"
@@ -10,6 +11,51 @@
 #include "log.h"
 #include "exception.h"
 
+struct reservation_set *new_reservation_set() {
+  struct reservation_set *r = malloc(sizeof(struct reservation_set));
+  r->addrs = malloc(sizeof(reg_t) * 16);
+  r->size = 0;
+  r->capa = 16;
+}
+
+void reservation_set_push(struct reservation_set *r, reg_t addr) {
+  if(r->size == r->capa) {
+    r->capa *= 2;
+    r->addrs = realloc(r->addrs, sizeof(reg_t) * r->capa);
+  }
+  r->addrs[r->size++] = addr;
+}
+
+bool reservation_set_check(struct reservation_set *r, reg_t addr) {
+  for(int i = 0; i < r->size; i++) {
+    if(r->addrs[i] == addr) return true;
+  }
+  return false;
+}
+
+#define cpu_readfunc(bit)  \
+  uint##bit##_t cpuread##bit(struct cpu *cpu, reg_t addr) { \
+    return sysbus_read##bit(cpu->bus, addr);  \
+  } 
+
+#define cpu_writefunc(bit)  \
+  void cpuwrite##bit(struct cpu *cpu, reg_t addr, uint##bit##_t src) {  \
+    if(cpu->reservation == addr) {  \
+      cpu->reservation = 0; \
+    } \
+    sysbus_write##bit(cpu->bus, addr, src); \
+  }
+
+cpu_readfunc(8)
+cpu_readfunc(16)
+cpu_readfunc(32)
+cpu_readfunc(64)
+
+cpu_writefunc(8)
+cpu_writefunc(16)
+cpu_writefunc(32)
+cpu_writefunc(64)
+
 struct cpu *new_cpu() {
   struct cpu *cpu = malloc(sizeof(struct cpu));
   cpu->bus = new_sysbus();
@@ -18,6 +64,7 @@ struct cpu *new_cpu() {
   reset_csr(cpu->csrs);
   cpu->shstk = new_shadowstack();
   cpu->priv = MACHINE;
+  cpu->reservation = 0;
   return cpu;
 }
 
@@ -29,10 +76,6 @@ void reset_cpu(struct cpu *cpu) {
 
 void free_cpu(struct cpu *cpu) {
   free(cpu);
-}
-
-static uint32_t cpu_fetch32(struct cpu *cpu) {
-  return sysbus_read32(cpu->bus, cpu->pc);
 }
 
 reg_t regread(struct cpu *cpu, int i) {
@@ -60,7 +103,7 @@ static void regdump(struct cpu *cpu) {
 }
 
 int cpu_step(struct cpu *cpu) {
-  uint32_t inst = cpu_fetch32(cpu);
+  uint32_t inst = cpuread32(cpu, cpu->pc);
   cpu->nextpc = cpu->pc + 4;
 
   log_dbg("inst %#x, pc: %#x", inst, cpu->pc);
@@ -403,6 +446,12 @@ int cpu_step(struct cpu *cpu) {
     case AMO:
       log_dbg("amo: funct5 %d rd %d rs1 %d rs2 %d", funct5, rd, rs1, rs2);
       switch(funct5) {
+        case OP_LR_W:
+          rv32a_lr_w(cpu, rd, rs1);
+          break;
+        case OP_SC_W:
+          rv32a_sc_w(cpu, rd, rs1, rs2);
+          break;
         case OP_AMOSWAP:
           rv32a_amoswap_w(cpu, rd, rs1, rs2);
           break;
