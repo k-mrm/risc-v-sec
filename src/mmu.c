@@ -1,5 +1,9 @@
 #include "mmu.h"
 
+reg_t sv32_translate(struct cpu *cpu, reg_t vaddr) {
+  ;
+}
+
 reg_t sv39_translate(struct cpu *cpu, reg_t vaddr) {
   reg_t offset = PAGE_OFFSET(vaddr);
   reg_t vpn[3] = { VPN0(vaddr), VPN1(vaddr), VPN2(vaddr) };

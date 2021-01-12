@@ -17,6 +17,7 @@ enum optype {
 #define FUNCT3(i)   ((uint8_t)(((i) >> 12) & 0x7))
 #define RS1(i)      ((uint8_t)(((i) >> 15) & 0x1f))
 #define RS2(i)      ((uint8_t)(((i) >> 20) & 0x1f))
+#define SHAMT(i)    ((uint8_t)(((i) >> 20) & 0x3f))
 #define FUNCT7(i)   ((uint8_t)(((i) >> 25) & 0x7f))
 
 #endif

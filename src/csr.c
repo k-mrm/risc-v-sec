@@ -13,7 +13,7 @@ void reset_csr(reg_t *csrs) {
   memset(csrs, 0, sizeof(reg_t) * 4096);
 
   /* SMIA */
-  reg_t misa = (MXL << (XLEN-2)) | (1 << 18) | (1 << 12) | (1 << 8) | (1 << 0);
+  reg_t misa = ((reg_t)MXL << (XLEN-2)) | (1 << 18) | (1 << 12) | (1 << 8) | (1 << 0);
 
   csrwrite(csrs, MISA, misa);
 }

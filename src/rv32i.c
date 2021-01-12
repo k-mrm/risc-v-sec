@@ -142,18 +142,18 @@ void rv32i_andi(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
   regwrite(cpu, rd, a);
 }
 
-void rv32i_slli(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
-  reg_t a = regread(cpu, rs1) << imm;
+void rv32i_slli(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t shamt) {
+  reg_t a = regread(cpu, rs1) << shamt;
   regwrite(cpu, rd, a);
 }
 
-void rv32i_srli(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
-  reg_t a = regread(cpu, rs1) >> imm;
+void rv32i_srli(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t shamt) {
+  reg_t a = regread(cpu, rs1) >> shamt;
   regwrite(cpu, rd, a);
 }
 
-void rv32i_srai(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
-  reg_t a = (sreg_t)regread(cpu, rs1) >> imm;
+void rv32i_srai(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t shamt) {
+  reg_t a = (sreg_t)regread(cpu, rs1) >> shamt;
   regwrite(cpu, rd, a);
 }
 
@@ -194,7 +194,12 @@ void rv32i_xor(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
 }
 
 void rv32i_srl(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
-  reg_t a = regread(cpu, rs1) >> regread(cpu, rs2);
+#if XLEN == 64
+  uint8_t shift = regread(cpu, rs2) & 0x3f;
+#elif XLEN == 32
+  uint8_t shift = regread(cpu, rs2) & 0x1f;
+#endif
+  reg_t a = regread(cpu, rs1) >> shift;
   regwrite(cpu, rd, a);
 }
 

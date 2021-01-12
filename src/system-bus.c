@@ -53,14 +53,14 @@ void sysbus_write32(struct sysbus *bus, reg_t addr, uint32_t src) {
 }
 
 uint64_t sysbus_read64(struct sysbus *bus, reg_t addr) {
-  return (uint32_t)sysbus_read8(bus, addr) |
-         (uint32_t)sysbus_read8(bus, addr+1) << 8 |
-         (uint32_t)sysbus_read8(bus, addr+2) << 16 |
-         (uint32_t)sysbus_read8(bus, addr+3) << 24 |
-         (uint32_t)sysbus_read8(bus, addr+4) << 32 |
-         (uint32_t)sysbus_read8(bus, addr+5) << 40 |
-         (uint32_t)sysbus_read8(bus, addr+6) << 48 |
-         (uint32_t)sysbus_read8(bus, addr+7) << 56; 
+  return (uint64_t)sysbus_read8(bus, addr) |
+         (uint64_t)sysbus_read8(bus, addr+1) << 8 |
+         (uint64_t)sysbus_read8(bus, addr+2) << 16 |
+         (uint64_t)sysbus_read8(bus, addr+3) << 24 |
+         (uint64_t)sysbus_read8(bus, addr+4) << 32 |
+         (uint64_t)sysbus_read8(bus, addr+5) << 40 |
+         (uint64_t)sysbus_read8(bus, addr+6) << 48 |
+         (uint64_t)sysbus_read8(bus, addr+7) << 56; 
 }
 
 void sysbus_write64(struct sysbus *bus, reg_t addr, uint64_t src) {

@@ -93,9 +93,9 @@ void rv32i_sltiu(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm);
 void rv32i_xori(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm);
 void rv32i_ori(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm);
 void rv32i_andi(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm);
-void rv32i_slli(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm);
-void rv32i_srli(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm);
-void rv32i_srai(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm);
+void rv32i_slli(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t shamt);
+void rv32i_srli(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t shamt);
+void rv32i_srai(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t shamt);
 
 void rv32i_add(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);
 void rv32i_sub(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2);

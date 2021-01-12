@@ -4,7 +4,9 @@
 #include "cpu.h"
 #include "csr.h"
 
-/* sv39 */
+
+#if XLEN == 64
+/* Sv39 */
 
 #define SATP_PPN(satp)  ((satp) & 0xfffffffffff)
 #define SATP_ASID(satp) (((satp) >> 43) & 0xffff)
@@ -19,5 +21,10 @@
 
 #define LEVELS  3
 #define PTESIZE 8
+
+#elif XLEN == 32
+/* Sv32 */
+
+#endif
 
 #endif

@@ -97,9 +97,9 @@ static char *regname[32] = {
 
 static void regdump(struct cpu *cpu) {
   for(int i = 0; i < 32; i++) {
-    printf("reg%d(%s): %u\n", i, regname[i], cpu->x[i]);
+    printf("reg%d(%s): %lu\n", i, regname[i], cpu->x[i]);
   }
-  printf("pc: %#x\n", cpu->pc);
+  printf("pc: %#lx\n", cpu->pc);
 }
 
 int cpu_step(struct cpu *cpu) {
@@ -112,7 +112,7 @@ int cpu_step(struct cpu *cpu) {
   uint8_t funct3 = FUNCT3(inst);
   uint8_t rs1 = RS1(inst);
   uint8_t rs2 = RS2(inst);
-  uint8_t shamt = RS2(inst);
+  uint8_t shamt = SHAMT(inst);
   uint8_t funct7 = FUNCT7(inst);
   uint8_t funct5 = FUNCT5(inst);
   uint8_t rl = RL(inst);
