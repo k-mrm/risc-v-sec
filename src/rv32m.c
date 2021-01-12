@@ -7,20 +7,20 @@ void rv32m_mul(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
 }
 
 void rv32m_mulh(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
-  sreg_t src1 = (sreg_t)regread(cpu, rs1);
-  sreg_t src2 = (sreg_t)regread(cpu, rs2);
-  sreg_t src = (src1 * src2) >> XLEN;
+  dsreg_t src1 = (dsreg_t)regread(cpu, rs1);
+  dsreg_t src2 = (dsreg_t)regread(cpu, rs2);
+  sreg_t src = (sreg_t)((src1 * src2) >> XLEN);
   regwrite(cpu, rd, src);
 }
 
 void rv32m_mulhsu(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
-  sreg_t src1 = (sreg_t)regread(cpu, rs1);
-  sreg_t src = (sreg_t)(src1 * regread(cpu, rs2)) >> XLEN;
+  dsreg_t src1 = (dsreg_t)(sreg_t)regread(cpu, rs1);
+  sreg_t src = (sreg_t)((dsreg_t)(src1 * (dreg_t)regread(cpu, rs2)) >> XLEN);
   regwrite(cpu, rd, src);
 }
 
 void rv32m_mulhu(struct cpu *cpu, uint8_t rd, uint8_t rs1, uint8_t rs2) {
-  reg_t a = (regread(cpu, rs1) * regread(cpu, rs2)) >> XLEN;
+  reg_t a = (reg_t)(((dreg_t)regread(cpu, rs1) * (dreg_t)regread(cpu, rs2)) >> XLEN);
   regwrite(cpu, rd, a);
 }
 
