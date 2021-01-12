@@ -186,11 +186,17 @@ int cpu_step(struct cpu *cpu) {
         case OP_LW:
           rv32i_lw(cpu, rd, rs1, imm);
           break;
+        case OP_LD:
+          rv64i_ld(cpu, rd, rs1, imm);
+          break;
         case OP_LBU:
           rv32i_lbu(cpu, rd, rs1, imm);
           break;
         case OP_LHU:
           rv32i_lhu(cpu, rd, rs1, imm);
+          break;
+        case OP_LWU:
+          rv64i_lwu(cpu, rd, rs1, imm);
           break;
         default:
           goto err;
@@ -209,6 +215,9 @@ int cpu_step(struct cpu *cpu) {
           break;
         case OP_SW:
           rv32i_sw(cpu, rs1, rs2, imm);
+          break;
+        case OP_SD:
+          rv64i_sd(cpu, rs1, rs2, imm);
           break;
         default:
           goto err;
@@ -339,15 +348,15 @@ int cpu_step(struct cpu *cpu) {
           rv64i_addiw(cpu, rd, rs1, imm);
           break;
         case OP_SLLIW:
-          rv64i_slliw(cpu, rd, rs1, (uint8_t)imm);
+          rv64i_slliw(cpu, rd, rs1, shamt);
           break;
         case SRXIW:
           switch(funct7) {
             case OP_SRLIW:
-              rv64i_srliw(cpu, rd, rs1, (uint8_t)imm);
+              rv64i_srliw(cpu, rd, rs1, shamt);
               break;
             case OP_SRAIW:
-              rv64i_sraiw(cpu, rd, rs1, (uint8_t)imm);
+              rv64i_sraiw(cpu, rd, rs1, shamt);
               break;
             default:
               goto err;

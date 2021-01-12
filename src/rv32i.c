@@ -123,7 +123,7 @@ void rv32i_slti(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
 }
 
 void rv32i_sltiu(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t imm) {
-  reg_t a = regread(cpu, rs1) < (uint32_t)imm;
+  reg_t a = regread(cpu, rs1) < imm;
   regwrite(cpu, rd, a);
 }
 
