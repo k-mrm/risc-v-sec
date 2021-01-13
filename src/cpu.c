@@ -427,16 +427,21 @@ int cpu_step(struct cpu *cpu) {
             case OP_EBREAK:
               raise(cpu, BREAKPOINT, 0);
               break;
-            case OP_SRET:
-              sret(cpu);
-              break;
-            case OP_MRET:
-              mret(cpu);
-              break;
             case OP_WFI:
               break;
             default:
-              goto err;
+              switch(funct7) {
+                case OP_SRET:
+                  sret(cpu);
+                  break;
+                case OP_MRET:
+                  mret(cpu);
+                  break;
+                case OP_SFENCE_VMA:
+                  break;
+                default:
+                  goto err;
+              }
           }
           break;
         case OP_CSRRW:
