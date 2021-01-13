@@ -61,5 +61,6 @@ enum exception {
 
 void raise(struct cpu *cpu, enum exception e, reg_t tval);
 void mret(struct cpu *cpu);
+void sret(struct cpu *cpu);
 
 #endif

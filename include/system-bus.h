@@ -3,9 +3,11 @@
 
 #include "risc-v-sec.h"
 #include "mem.h"
+#include "uart.h"
 
 struct sysbus {
   uint8_t *mem;
+  struct uart *uart;
 };
 
 struct sysbus *new_sysbus(void);

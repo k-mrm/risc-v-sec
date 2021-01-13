@@ -3,6 +3,7 @@
 #include "risc-v-sec.h"
 #include "cpu.h"
 #include "log.h"
+#include "memmap.h"
 
 void dump_prg(uint8_t *prg, size_t psize) {
   for(size_t i = 0; i < psize; i++) {
@@ -39,6 +40,7 @@ struct emu *emu_open(char *prgfname) {
   size_t prgsize;
   uint8_t *prg = read_prg(prgfname, &prgsize);
   load_prg(e->cpu->bus->mem, prg, prgsize);
+  e->cpu->pc = DRAMBASE;
   
   return e;
 }

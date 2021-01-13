@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define XLEN 64
+#define XLEN 32
 
 #if XLEN == 32
   typedef uint32_t reg_t;

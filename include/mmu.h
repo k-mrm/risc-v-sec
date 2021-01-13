@@ -4,6 +4,13 @@
 #include "cpu.h"
 #include "csr.h"
 
+enum pagingmode {
+  BARE, SV32, SV39, SV48
+};
+
+enum accesstype {
+  ACCLOAD, ACCSTORE, ACCINSTRUCTION,
+};
 
 #if XLEN == 64
 /* Sv39 */
@@ -52,5 +59,8 @@
 #define PTE_G(p)  (((p) >> 5) & 0x1)
 #define PTE_A(p)  (((p) >> 6) & 0x1)
 #define PTE_D(p)  (((p) >> 7) & 0x1)
+
+reg_t translate(struct cpu *cpu, reg_t vaddr, enum accesstype);
+enum pagingmode paging_mode(struct cpu *cpu);
 
 #endif

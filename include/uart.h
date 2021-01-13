@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "risc-v-sec.h"
+#include "memmap.h"
 /* uart 16550 */
 
 #define UART0 0x10000000
@@ -19,7 +20,12 @@
 #define MSR   6
 #define SCR   7
 
-void uartread(reg_t addr);
-void uartwrite(reg_t addr, uint8_t data);
+struct uart {
+  reg_t reg[UARTSIZE];
+};
+
+struct uart *new_uart(void);
+void uartread(struct uart *uart, reg_t addr);
+void uartwrite(struct uart *uart, reg_t addr, uint8_t data);
 
 #endif

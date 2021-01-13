@@ -25,6 +25,9 @@ void rv32i_jalr(struct cpu *cpu, uint8_t rd, uint8_t rs1, int32_t off) {
   if(rd == 0 && rs1 == 1 && off == 0) { /* ret */
     shstk_check(cpu, cpu->nextpc);
   }
+  if(rd == 1) { /* maybe function call */
+    shstk_push(cpu, t);
+  }
   regwrite(cpu, rd, t);
 }
 

@@ -10,6 +10,7 @@
 #include "rv32a.h"
 #include "log.h"
 #include "exception.h"
+#include "mmu.h"
 
 struct reservation_set *new_reservation_set() {
   struct reservation_set *r = malloc(sizeof(struct reservation_set));
@@ -33,9 +34,16 @@ bool reservation_set_check(struct reservation_set *r, reg_t addr) {
   return false;
 }
 
+uint32_t cpufetch(struct cpu *cpu) {
+  reg_t pa = translate(cpu, cpu->pc, ACCINSTRUCTION);
+  log_dbg("pc pa: %#lx", pa);
+  return sysbus_read32(cpu->bus, pa);
+}
+
 #define cpu_readfunc(bit)  \
   uint##bit##_t cpuread##bit(struct cpu *cpu, reg_t addr) { \
-    return sysbus_read##bit(cpu->bus, addr);  \
+    reg_t pa = translate(cpu, addr, ACCLOAD); \
+    return sysbus_read##bit(cpu->bus, pa);  \
   } 
 
 #define cpu_writefunc(bit)  \
@@ -43,7 +51,8 @@ bool reservation_set_check(struct reservation_set *r, reg_t addr) {
     if(cpu->reservation == addr) {  \
       cpu->reservation = 0; \
     } \
-    sysbus_write##bit(cpu->bus, addr, src); \
+    reg_t pa = translate(cpu, addr, ACCSTORE); \
+    sysbus_write##bit(cpu->bus, pa, src); \
   }
 
 cpu_readfunc(8)
@@ -103,7 +112,7 @@ static void regdump(struct cpu *cpu) {
 }
 
 int cpu_step(struct cpu *cpu) {
-  uint32_t inst = cpuread32(cpu, cpu->pc);
+  uint32_t inst = cpufetch(cpu);
   cpu->nextpc = cpu->pc + 4;
 
   log_dbg("inst %#x, pc: %#x", inst, cpu->pc);

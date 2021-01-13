@@ -6,18 +6,36 @@
 struct sysbus *new_sysbus() {
   struct sysbus *s = malloc(sizeof(struct sysbus));
   s->mem = new_mem(128 * 1024 * 1024);
+  s->uart = new_uart();
   return s;
 }
 
 uint8_t sysbus_read8(struct sysbus *bus, reg_t addr) {
-  return memread(bus->mem, addr);
+  if(CLINT <= addr && addr < CLINTEND) {
+    ;
+  }
+  else if(UART0 <= addr && addr < UARTEND) {
+    uartread(bus->uart, addr);
+  }
+  else if(VIRTIO <= addr && addr < VIRTIOEND) {
+    ;
+  }
+  else if(addr >= DRAMBASE) {
+    return memread(bus->mem, addr);
+  }
 }
 
 void sysbus_write8(struct sysbus *bus, reg_t addr, uint8_t src) {
-  if(UART0 <= addr && addr < UARTEND) {
-    uartwrite(addr, src);
+  if(CLINT <= addr && addr < CLINTEND) {
+    ;
   }
-  else {
+  else if(UART0 <= addr && addr < UARTEND) {
+    uartwrite(bus->uart, addr, src);
+  }
+  else if(VIRTIO <= addr && addr < VIRTIOEND) {
+    ;
+  }
+  else if(addr >= DRAMBASE) {
     memwrite(bus->mem, addr, src);
   }
 }
