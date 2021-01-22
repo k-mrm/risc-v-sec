@@ -9,7 +9,7 @@ struct uart *new_uart() {
   return u;
 }
 
-void uartread(struct uart *uart, reg_t addr) {
+uint8_t uartread(struct uart *uart, reg_t addr) {
   return uart->reg[addr - UART0];
 }
 

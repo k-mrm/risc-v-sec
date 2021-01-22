@@ -15,7 +15,7 @@ uint8_t sysbus_read8(struct sysbus *bus, reg_t addr) {
     ;
   }
   else if(UART0 <= addr && addr < UARTEND) {
-    uartread(bus->uart, addr);
+    return uartread(bus->uart, addr);
   }
   else if(VIRTIO <= addr && addr < VIRTIOEND) {
     ;

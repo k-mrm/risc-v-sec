@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include "risc-v-sec.h"
 #include "memmap.h"
-/* uart 16550 */
+
+/* 16550a UART */
 
 #define UART0 0x10000000
 #define RBR   0
@@ -21,11 +22,11 @@
 #define SCR   7
 
 struct uart {
-  reg_t reg[UARTSIZE];
+  uint8_t reg[UARTSIZE];
 };
 
 struct uart *new_uart(void);
-void uartread(struct uart *uart, reg_t addr);
+uint8_t uartread(struct uart *uart, reg_t addr);
 void uartwrite(struct uart *uart, reg_t addr, uint8_t data);
 
 #endif
